@@ -1,0 +1,343 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Welch!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>Első osztályom</title>
+        <para>
+            Valósítsd meg C++-ban és Java-ban az módosított polártranszformációs algoritmust! A matek háttér 
+            teljesen irreleváns, csak annyiban érdekes, hogy az algoritmus egy számítása során két normálist
+            számol ki, az egyiket elspájzolod és egy további logikai taggal az osztályban jelzed, hogy van vagy
+            nincs eltéve kiszámolt szám.
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat... térj ki arra is, hogy a JDK forrásaiban a Sun programozói
+            pont úgy csinálták meg ahogyan te is, azaz az OO nemhogy nem nehéz, hanem éppen természetes neked!
+        </para>   
+        <note>
+			<title>Átvett kódcsipet</title>
+			<para>
+				A következő kódcsipetet Bátfai Norbert keze munkáját dícséri!
+			</para>
+        </note>   
+        <programlisting language="java">
+            <![CDATA[ 
+            public class PolarGenerator {
+                boolean nincsTarolt = true;
+                double tarolt;
+                public PolarGenerator() {
+            
+                    nincsTarolt = true;
+            
+                }
+                public double kovetkezo() {
+                    if(nincsTarolt) {
+                        double u1, u2, v1, v2, w;
+                        do {
+                            u1 = Math.random();
+                            u2 = Math.random();
+            
+                            v1 = 2*u1 - 1;
+                            v2 = 2*u2 - 1;
+            
+                            w = v1*v1 + v2*v2;
+            
+                        } while(w > 1);
+            
+                        double r = Math.sqrt((-2*Math.log(w))/w);
+            
+                        tarolt = r*v2;
+                        nincsTarolt = !nincsTarolt;
+            
+                        return r*v1;
+            
+                    } else {
+                        nincsTarolt = !nincsTarolt;
+                        return tarolt;
+                    }
+                }
+            
+                public static void main(String[] args) {
+                    PolarGenerator g = new PolarGenerator();
+                    for(int i=0; i<10; ++i)
+                        System.out.println(g.kovetkezo());
+                }
+            }]]>
+        </programlisting>
+        <para>
+            A polártranszformációs algoritmus véletlen szám generálásra alkalmazható. Próbáljuk is ki: 
+        </para>
+        <screen>
+            <![CDATA[ 
+            0.500010678804642
+            0.7466265624656746
+            1.0803216647807399
+            -0.32064099460970763
+            -2.5477451034196923
+            0.6811730798994344
+            -0.44975361547907916
+            -0.9422083605110528
+            0.49015177151970096
+            2.058535110772562
+            ]]>
+        </screen>
+        <para>
+            Ahogyan azt vártuk, kaptunk tíz darab normalizált véletlen számot. Az OO megvalósításnak köszönhetően 
+            a kódunk sokkal olvashatóbb, átláthatóbb és a generálás matematikai hátterével se kell különösen foglalkoznunk. 
+        </para>             
+    </section>        
+
+    <section>
+        <title>LZW</title>
+        <para>
+            Valósítsd meg C-ben az LZW algoritmus fa-építését!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <note>
+			<title>Átvett kódcsipet</title>
+			<para>
+				A következő kódcsipetet Bátfai Norbert keze munkáját dícséri!
+			</para>
+        </note>
+        <para>
+            Ezt a programot from skrech módon, a koronavírus miatti távoktatás során írtuk, Bátfai Norbert 
+            stream-jei alapján. 
+        </para>   
+        <para>
+            A bineáris fa építése a következő algoritmus alapján zajlik: 
+
+            Amennyiben 0-ás elemet kapunk, meg kell vizsgálnunk, hogy az aktuális csomópontunknak van-e nullás gyermeke. 
+            Azesetben, ha még nincs akkor létrehozunk egyet, majd visszalépünk a gyökérre. Viszont ha van akkor arra lépünk rá 
+            és olvassuk tovább a bemenetet. Hasonló képpen járunk el 1-es bemenet esetén is, csak ott értelemszerűen az 
+            egyes gyermeket vizsgáljuk. 
+        </para>
+        <para>
+            Nézzünk rá egy példát (a bemenet: 01111001001001000111): 
+        </para>
+        <screen>
+            <![CDATA[ 
+            ---------0 3 0 
+            ------0 2 0 
+            ---------1 3 0 
+            ---/ 1 0 
+            ---------------0 5 0 
+            ------------0 4 0 
+            ---------0 3 0 
+            ------1 2 0 
+            ---------1 3 0 
+            ------------1 4 0 
+            ]]>
+        </screen>
+    </section>        
+        
+    <section>
+        <title>Fabejárás</title>
+        <para>
+            Járd be az előző (inorder bejárású) fát pre- és posztorder is!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            A megoldás nem túl bonyolult. Az előző programunk rekuríz print függvényét kell csak módosítanunk. 
+            De még előtte pár szóban arról, hogy mi is az az inorder, preorder és postorder: 
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    Inorder: Először a bal oldali közvetlen részfát járjuk be, majd a gyökeret és végül a jobb oldalit. 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Preorder: Először a gyökeret, majd a bal aztán a jobb oldali közvetlen részfát járjuk be. 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Postorder: Először a bal aztán a jobb oldali közvetlen részfát járjuk be és végül a gyökeret. 
+                </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            Az előbb már néztünk példát az inorder fára, de most akkor nézzünk meg egy preodert majd egy postordert is. 
+        </para>
+        <para>
+            Preorder: 
+        </para>
+        <screen>
+            <![CDATA[ 
+            ---/ 1 0 
+            ------0 2 0 
+            ---------0 3 0 
+            ---------1 3 0 
+            ------1 2 0 
+            ---------0 3 0 
+            ------------0 4 0 
+            ---------------0 5 0 
+            ---------1 3 0 
+            ------------1 4 0 
+            ]]>
+        </screen>
+        <para>
+            Postorder: 
+        </para>
+        <screen>
+            <![CDATA[ 
+            ---------0 3 0 
+            ---------1 3 0 
+            ------0 2 0 
+            ---------------0 5 0 
+            ------------0 4 0 
+            ---------0 3 0 
+            ------------1 4 0 
+            ---------1 3 0 
+            ------1 2 0 
+            ---/ 1 0 
+            ]]>
+        </screen>
+    </section>        
+                        
+    <section>
+        <title>Tag a gyökér</title>
+        <para>
+            Az LZW algoritmust ültesd át egy C++ osztályba, legyen egy Tree és egy beágyazott Node
+            osztálya. A gyökér csomópont legyen kompozícióban a fával!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Ebben az esetben felhasnzáljuk a már megírt LZWBinFa programot (z3a7.cpp), mely
+            eleve úgy lett megírva, hogy a gyökér kompozícióban van a fával.
+        </para>
+    </section>        
+                
+    <section>
+        <title>Mutató a gyökér</title>
+        <para>
+            Írd át az előző forrást, hogy a gyökér csomópont ne kompozícióban, csak aggregációban legyen a 
+            fával!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása:  
+        </para>
+        <para>
+            Itt ugyan úgy felhasználjuk, viszont itt már át kell dolgoznunk kitcsit, hogy a gyökér elemünkből 
+            mostmár mutató legyen. 
+        </para>
+        <para>
+            A feladat nem olyan nehéz mint ahogy gondoluk. Először is a gyökér csomópont helyénél helyet kell 
+            foglalnunk a gyökérnek. Majd az így kapott gyökér mutatónkat behelyettesítjük oda ahol eddig a gyökér változóra 
+            hivatkoztunk (ez csak annyit tesz, hogy kiszedjük előle a címképző operátort).
+        </para>
+    </section>                     
+
+    <section>
+        <title>Mozgató szemantika</title>
+        <para>
+            Írj az előző programhoz mozgató konstruktort és értékadást, a mozgató konstruktor legyen a mozgató
+            értékadásra alapozva!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása:  
+        </para>
+        <para>
+            Ezt a feladatot, a második feladathoz hasonló módon valósítjuk meg. Egész pontosan annak a programnak 
+            a továbbfejlesztéséről van szó Bátfai Norbert vezénylése alatt. 
+        </para>
+        <para>
+            Az LZWTree osztályunk úgy épül fel, hogy az <code>LZWTree</code>
+            osztályon belül megtalálhatóak beágyazott <code>Csomopont</code>
+            osztályú objektumok, ezek alkotják a fát.
+            Ebből következik, hogy a fát úgy tudjuk másolni, hogy
+            ezeket a beágyazott csomópontokat másoljuk, rekurzívan.
+        </para>
+        <programlisting language="C++">
+            <![CDATA[ BinTree(const BinTree & old)
+        {
+            std::cout << "BT copy ctor" << std::endl;
+
+            root = cp(old .root, old.treep);
+        }
+
+        Node * cp(Node *node, Node *treep)
+        {
+            Node * newNode = nullptr;
+
+            if(node)
+            {
+                newNode = new Node(node -> getValue());
+                
+                newNode -> leftChild(cp(node -> leftChild(), treep));
+                newNode -> rightChild(cp(node -> rightChild(), treep));
+
+                if (node == treep)
+                {
+                    this -> treep = newNode;
+                }
+            }
+
+            return newNode;
+        }
+
+        BinTree & operator=(const BinTree & old)
+        {
+            std::cout << "BT copy assign" << std::endl;
+
+            BinTree tmp{old};
+            std::swap(*this, tmp);
+            return *this;
+        } 
+        BinTree(BinTree && old)
+        {
+            std::cout << "BT move ctor" << std::endl;
+
+            root = nullptr;
+            *this = std::move(old);
+        }
+        BinTree & operator=(BinTree && old)
+        {
+            std::cout << "BT move assign" << std::endl;
+        
+            std::swap(old.root, root);
+            std::swap(old.treep, treep);
+
+            return *this;
+    }]]>
+        </programlisting>
+    </section>      
+    <section>
+        <title>Malmo: 5x5x5</title>
+        <para> 
+            <link xlink:href="https://youtu.be/aoyZWakqNGY">https://youtu.be/aoyZWakqNGY</link>
+        </para>
+    </section>               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
