@@ -73,7 +73,6 @@
 main ()
 {
   for (;;);
-
   return 0;
 }
 ]]>
@@ -86,7 +85,6 @@ main ()
 main ()
 {
   while(true);
-
   return 0;
 }
 ]]>
@@ -145,7 +143,6 @@ Tasks: 329 total,   2 running, 256 sleeping,   0 stopped,   1 zombie
 %Cpu7 :100,0 us, 0,0 sy, 0,0 ni, 0,0 id, 0,0 wa, 0,0 hi, 0,0 si, 0,0 st
 KiB Mem :16373532 total,11701240 free, 2254256 used, 2418036 buff/cache
 KiB Swap:16724988 total,16724988 free,       0 used. 13751608 avail Mem 
-
   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND     
  5850 batfai    20   0   68360    932    836 R 798,3  0,0   8:14.23 infty-f     
 ]]></screen>  
@@ -160,7 +157,6 @@ KiB Swap:16724988 total,16724988 free,       0 used. 13751608 avail Mem
         </para>
         <programlisting language="c"><![CDATA[Program T100
 {
-
 	boolean Lefagy(Program P)
 	{
 		 if(P-ben van végtelen ciklus)
@@ -168,7 +164,6 @@ KiB Swap:16724988 total,16724988 free,       0 used. 13751608 avail Mem
 		 else
 			return false; 
 	}
-
 	main(Input Q)
 	{
 		Lefagy(Q)
@@ -189,7 +184,6 @@ false]]></screen>
         </para>
         <programlisting language="c"><![CDATA[Program T1000
 {
-
 	boolean Lefagy(Program P)
 	{
 		 if(P-ben van végtelen ciklus)
@@ -197,7 +191,6 @@ false]]></screen>
 		 else
 			return false; 
 	}
-
 	boolean Lefagy2(Program P)
 	{
 		 if(Lefagy(P))
@@ -205,12 +198,10 @@ false]]></screen>
 		 else
 			for(;;); 
 	}
-
 	main(Input Q)
 	{
 		Lefagy2(Q)
 	}
-
 }]]></programlisting>            
         <programlisting><![CDATA[]]></programlisting>            
         <para>
@@ -305,6 +296,16 @@ false]]></screen>
                 }]]></programlisting>
         </para>
         <para>
+            Nézzük meg a három értékcserét egyesével: 
+        </para>
+        <programlisting language="c"><![CDATA[
+                tmp = a;
+                a = b;
+                b = tmp;
+                printf("a = %d, b = %d\n", a, b);
+                break;
+            ]]></programlisting>
+        <para>
             A segédváltós értékcserét egy egyszerű példával szemléltetném: Van az asztalon egy pohár almalé és egy 
             pohár narancslé és szeretnénk a két pohár tartalmát felcserélni. Ez a feladat így nem más mint egy 
             gordiuszi csomó. De mielőtt pánikba esünk, hívjunk segítségül egy harmadik, de üres poharat. Ez a pohár lesz
@@ -312,6 +313,31 @@ false]]></screen>
             így abba átönthetjük a narancslevet. Ami által a narancsleves pohár is felszabadúl. Ezután a segédpohárból beleönthetjük
             az almalevet az immár üres pohárba. Egyszerű, nem igaz?
         </para>
+        <programlisting language="c"><![CDATA[
+            a = a - b;
+            b = a + b;
+            a = b - a;
+            printf("a = %d, b = %d\n", a, b);
+            break;
+        ]]></programlisting>
+        <para>
+            A segédváltozós értékcserével ellentétben ezt a kettőt csak számokkal tudjuk alkalmazni, mivel például a <type>sztringek</type> vagy <type>boolenek</type> kivonása és összeadása
+            nem igazán értelmezhető. Itt a kivonásos példában azzal kezdjük, hogy az <varname>a</varname>-ból kivonjuk a <varname>b</varname>-t. A <varname>b</varname>-hez hozzáadjuk az <varname>a</varname>-t
+            , ezzel kiegészítve, tehát megkapjuk az <varname>a</varname> értéket és végül <varname>b</varname>-ből kivonjuk az <varname>a</varname>-t és kész is vagyunk. 
+        </para>
+        <programlisting language="c"><![CDATA[
+            a = a + b;
+            b = a - b;
+            a = a - b;
+            printf("a = %d, b = %d\n", a, b);
+            break;
+        ]]></programlisting>
+        <para>
+            Végül az összeadásos: <varname>a</varname>-hoz hozzáadjuk <varname>b</varname>-t, tehát tartalmazza mindkét értéket. Utánna <varname>b</varname>-nél kivonjuk <varname>a</varname>-ból 
+            önmagát, így már csak az eredeti <varname>a</varname>-t tartalmazza. Végül az <varname>a</varname>-t is meghatározzuk, úgy hogy kivonjuk belőle a <varname>b</varname>-t, ami ugye az új <varname>a</varname> 
+            , tehát az új <varname>b</varname> lesz. Kicsit katyvasz, de csak egyszer kell megérteni és követhető lesz. 
+        </para>
+
     </section>                     
 
     <section>
@@ -323,84 +349,11 @@ false]]></screen>
         </para>
         <para>
             Megoldás forrása:
-            <programlisting language="c"><![CDATA[#include <stdio.h>
-                #include <curses.h>
-                #include <unistd.h>
-                int main()
-                {
-                    WINDOW *ablak;
-                    ablak = initscr();
-
-                    int x = 0;
-                    int y = 0;
-
-                    int delX = 1;
-                    int delY = 1;
-
-                    int mx;
-                    int my;
-                    
-                    while(true)
-                    {
-                        printf("\033[0;32m");
-
-                        getmaxyx(ablak, my, mx);
-                        mvprintw(y, x, "(DVD)");
-
-                        refresh();
-                        usleep(100000);
-                        
-                        clear();
-
-                        x = x + delX;
-                        y = y + delY;
-                        /*
-                        if(x <= 0)
-                        {
-                            delX = delX * -1;
-                            //printf("\033[0;31m");
-                        }
-                        if(x >= mx-1)
-                        {
-                            delX = delX * -1;
-                            //printf("\033[0;32m");
-                        }
-                        if(y <= 0)
-                        {
-                            delY = delY * -1;
-                            //printf("\033[0;33m");
-                        }
-                        if(y >= my-1)
-                        {
-                            delY = delY * -1;
-                            //printf("\033[0;34m");
-                        }
-                        */
-                        for(;x <= 0;)
-                        {
-                            delX = delX * -1;
-                            break;
-                        }
-                        for(;x >= mx-1;)
-                        {
-                            delX = delX * -1;
-                            break;
-                        }
-                        for(;y <= 0;)
-                        {
-                            delY = delY * -1;
-                            break;
-                        }
-                        for(;y >= my-1;)
-                        {
-                            delY = delY * -1;
-                            break;
-                        }
-                    }
-
-                    return 0;
-                }]]></programlisting>  
+        </para> 
+        <para>
+            Fordítás: 
         </para>
+        <screen>gcc bouncyO.cpp -o bouncyO -lncurses</screen>
         <para>
             Eleve az adott példa alapján megírtam a program if-es változatát, mely kommentként szerepel a forrásban.
             Ezután az if nélküli verzióban az if-ek feladatát kiszerveztem for ciklusoknak, melyek csak akkor lépnek életbe, ha a 
@@ -412,8 +365,96 @@ false]]></screen>
             Mellesleg az én példámban 'o' helyett a '(DVD)' szerepel, mivel kisebb koromban szerettem nézni a DVD lejátszókon
             a képernyőkimélőt, melyen a felirat minden visszapattanás után színt váltott. Ezt egy kis "easteregg"-nek szántam.
         </para>
+        <programlisting language="c"><![CDATA[
+            #include <stdio.h>
+            #include <curses.h>
+            #include <unistd.h>
+            int main()
+            {
+                WINDOW *ablak;
+                ablak = initscr();
+                int x = 0;
+                int y = 0;
+                int delX = 1;
+                int delY = 1;
+                int mx;
+                int my;
+                
+                while(true)
+                {
+                    printf("\033[0;32m");
+                    getmaxyx(ablak, my, mx);
+                    mvprintw(y, x, "(DVD)");
+                    refresh();
+                    usleep(100000);
+                    
+                    clear();
+                    x = x + delX;
+                    y = y + delY;
+                ]]>
+        </programlisting> 
+        <para>
+            Először behívjuk a kellő könyvtárakat, felvesszük a változókat és közben az <varname>ablak</varname>-ban inicializáljuk a terminál ablakot, 
+            amit majd a <function>getmaxyx()</function> függvényben meghatározzuk, az ablak maximális szélességét és magasságát. Ez ugye elengedhetetlen egy 
+            labdapattogtatós program esetén. Továbbá mivel a while-on belül van, így az ablak méretváltoztatására is jól reagál, mondhatni rekurzív megjelenítést 
+            érünk el. Ezen kívűl a <function>mvprintw()</function> függvény pedig felel a kis DVD felíratunk kirajzolásáért az adott x és y koordinátákon. 
+        </para>
+        <programlisting language="c"><![CDATA[
+                    /*
+                    if(x <= 0)
+                    {
+                        delX = delX * -1;
+                        //printf("\033[0;31m");
+                    }
+                    if(x >= mx-1)
+                    {
+                        delX = delX * -1;
+                        //printf("\033[0;32m");
+                    }
+                    if(y <= 0)
+                    {
+                        delY = delY * -1;
+                        //printf("\033[0;33m");
+                    }
+                    if(y >= my-1)
+                    {
+                        delY = delY * -1;
+                        //printf("\033[0;34m");
+                    }
+                    */
+                    for(;x <= 0;)
+                    {
+                        delX = delX * -1;
+                        break;
+                    }
+                    for(;x >= mx-1;)
+                    {
+                        delX = delX * -1;
+                        break;
+                    }
+                    for(;y <= 0;)
+                    {
+                        delY = delY * -1;
+                        break;
+                    }
+                    for(;y >= my-1;)
+                    {
+                        delY = delY * -1;
+                        break;
+                    }
+                }
+                return 0;
+            }]]></programlisting> 
+        <para>
+            Maga a visszapattanás pedig pofon egyszerű. Megnézzük hogy melyik szélét érte el az ablaknak. Itt ugye sok lehetőség nincs, csak négy. Ezt ugye 
+            a felírat koordinátáival és az ablak maximális méretinek a segítségével tesszük meg (itt kihasználjuk, hogy a bal szél az x = 0, az alja meg az y = 0). Ha elérte egyszerűen 
+            megfordítjuk a menetirányát, ugy hogy az ezért felelős <varname>delX</varname>-nek és <varname>delY</varname>-nak megcseréljük az előjelét (laikusoknak: megszorozzuk (-1)-el). 
+        </para>
+        <para>
+            Ezeket meg ismételjük a végtelenségig, vagy legalábbis a megunásig. Mondjuk én kiskoromban huzamosabb ideig is el tudtam nézni, várva hogy hátha más szögbe pattan vissza, 
+            de hiába, nem lehet minden Pong... 
+        </para>
     </section>                     
-
     <section>
         <title>5. Feladat: Szóhossz és a Linus Torvalds féle BogoMIPS</title>
         <para>
@@ -431,6 +472,30 @@ false]]></screen>
             </link>
         </para>
         <para>
+            Nyílván nem én vagyok az egyetlen aki korábban nem hallott még a BogoMIPS-ről, de ezzel alapvetőleg nincs is baj. Két kifejezés játékos összemosásából jött létre: Bogus (kamu, nem valódi) 
+            és MIPS, ami két dolognak is a rövidítése. Az első a tudományosan hangzó: Millions of Instructions per Second (másodpercenként végrehajtott műveletek millióban) és a második, de találóbb 
+            jelentése: Meaningless Indication of Processor Speed (értelmetlen jellemzése a processzor sebességének). Ez mutatja is, hogy ez inkább egy vicces apróság, mint egy komoly és pontos teszt, 
+            de azért elemzése megér egy misét. Egyébként már valószínűleg mindenki találkozott ezzel, bár esélyes hogy nem vette észre, vagy csak jelentéktelen random karaktereknek vette, mint a többi 
+            hardware checket bootoláskor, mintha csak valami mátrix easter egg lenne... 
+        </para>
+        <para>
+            Alapvetőleg egy ehhez hasonló értéket kell kapnunk: 
+        </para>
+        <screen>
+            <![CDATA[   
+            386SX         clock * 0.14
+            386DX         clock * 0.18
+            486Cyrix/IBM  clock * 0.33
+            486SX/DX/DX2  clock * 0.50
+            586           clock * 0.39
+            ]]>
+        </screen>
+        <para>
+            Ha ennél jóval kisebbet mutat a gépünk akkor érdemes ránézni a CPU beállításokra, vagy a cache-re. 
+            Itt még meg kell jegyezni, hogy a BogoMIPS érték igazából két dologra jó. Le lehet ellenőrizni, hogy a processzor a beállításainak megfelelően működik és persze lehet izmozni a 
+            haveroknak, hogy kinek mekkora... 
+        </para>
+        <para>
             A program lényege, hogy bináris eltolással végig lépkedjünk egy <type>long long</type> típusú változón,
             miközben mérjük, hogy mennyi ideig tart ez neki. Ezután a kapott hatalmas számot el kell osztanunk egy
             számmal (ez egy tetszőleges szám lehet, a cél csak az, hogy az eredmény 100-1000 között legyen).
@@ -438,9 +503,39 @@ false]]></screen>
             futtatjuk, akkor egyszerűen megállapítható, hogy melyik gép processzora számít gyorsabban.
         </para>
         <para>
-            Ha a program <loop>while()</loop> ciklusa előtt létrehozunk egy változót és ennek értékét ciklus futásonként 
+            Ha a program while() ciklusa előtt létrehozunk egy változót és ennek értékét ciklus futásonként 
             növeljük, akkor visszakapjuk a <type>long long</type> típus méretét bitben.
         </para>
+        <programlisting language="c">
+            <![CDATA[
+            #include <stdio.h>
+
+                int main()
+                {
+                    int wordLength = 0, word = 1;
+                    
+                    do
+                    {
+                        
+                        wordLength++;
+                        
+                    } while(word <<= 1);
+                    
+                    printf("A szó ezen a gépen %d bites\n", wordLength);
+                    
+                    return 0;
+                }
+            ]]>
+        </programlisting> 
+        <para>
+            A szóhossz program is nagyon hasonló csak ez még egyszerűbb alapvetőleg. Bitenként lépkedünk és minden lépésnél növeljük a <varname>wordLength</varname>-et, azaz megszámoljuk lényegében 
+            a bitjeit. Így megkapván a szóhosszt: 
+        </para>
+        <screen>
+            <![CDATA[ 
+            A szó ezen a gépen 32 bites
+            ]]>
+        </screen>
     </section>                     
 
     <section>
@@ -456,17 +551,36 @@ false]]></screen>
             Megoldás forrása: <link xlink:href=""></link>
         </para>
         <para>
-            <programlisting language="c"><![CDATA[#include <stdio.h>
+            Nevét Larry Page után kapta, a Google cégóriás egyik alapítójáról. Úgy gondolták, hogy a keresési szó szerepelésén túl 
+            úgy lehetne legjobban rangsorolni az oldalakat, hogyha a rájuk mutató oldalak száma és minősége szerint rangsorolnák a 
+            találatokat. Az ötlet mögött az a feltételezés ált, hogyha megbízható oldalak hivatkozzák meg az adott oldalt, akkor 
+            lényegében azok az oldalak validálják annak megbízhatóságát és növelik annak az esélyét, hogy a keresett tartalom előre kerül. 
+            Valószínűleg igazuk is lett, mert a Google ezáltal hamar a legnépszerűbb keresőmotorrá vált. 
+        </para>
+        <para>
+            Az algoritmus alapból (0. iteráció) minden oldalnak azonos pageranket határoz meg (1/N, ahol N a lapok száma). 
+            Ezután a rá mutató lapok előző iterációban kiszámítóttot pagerankjét elosztjuk a rá mutató lapok számával. 
+            Könnyen észrevehető, hogy ezt a végtelenségig csinálhatnánk.   
+        </para>
+        <para>
+            Ennek kiküszöbölésére hivatott a damp factor bevezetése. Igazából nem ez a fő célja, hanem a Sztochasztikus szörföző metódushoz 
+            szükséges, ami azt próbálja szimulálni, hogy a weben véletlen szerűen nézelődő felhasználó milyen valószínűséggel talál rá az oldalra. 
+            De sokat segít hogy a számításaink ne menjenek a végtelenségig. 
+        </para>
+        <para>
+            <programlisting language="c"><![CDATA[
+                #include <stdio.h>
                 #include <stdlib.h>
+                #include <math.h>
                 
                 double distance (double PR[], double PRv[], int db)
                 {
                     double dist = 0.0;
                     for(int i = 0; i < db; i++)
                     {
-                        dist += abs(PR[i] - PRv[i]);
+                        dist += pow((PRv[i] - PR[i]), 2);
                     }
-                    return dist;
+                    return sqrt(dist);
                 }
                 
                 void kiir (double list[], int db)
@@ -476,45 +590,118 @@ false]]></screen>
                         printf("PageRank [%d]: %lf\n", i, list[i]);
                     }
                 }
-                
-                int main(void)
-                {
-                    double L[4][4] = 
-                    {
-                    {0.0, 0.0, 1.0/3.0, 0.0},
-                    {1.0, 1.0/2.0, 1.0/3.0, 1.0},
-                    {0.0, 1.0/2.0, 0.0, 0.0},
-                    {0.0, 0.0, 1.0/3.0, 0.0}
-                    };
-                
-                    double PR[4] = {0.0, 0.0, 0.0, 0.0};
-                    double PRv[4] = {1.0/4.0, 1.0/4.0, 1.0/4.0, 1.0/4.0};
-                
-                    for(;;)
-                    {
-                        for(int i = 0; i < 4; i++)
-                        {
-                            PR[i] = PRv[i];
-                        }
-                        for(int i = 0; i < 4; i++)
-                        {
-                            for(int j = 0; j < 4; j++)
-                            {
-                                PRv[i] += L[i][j] * PR[j];                
-                            }
-                        }
-                        if(distance(PR, PRv, 4) < 0.00001)
-                        {
-                            break;
-                        }
-                    }
-                    kiir (PR, 4);
-                    return 0;
-                }
                 ]]></programlisting>
         </para>
         <para>
-            A program lényege, hogy kicsiben (4 értéket használva) modellezzük a Google Page Rank algoritmusát.
+            Behívjuk először a szükséges könyvtárakat, mint például a <varname>math.h</varname>-t, amit a következő bekezdésben fogok részletezni. 
+        </para>
+        <para>
+            A <function>distance()</function> függvényről külön elméláznék. Az eredeti terv az volt, hogy <function>abs()</function> segítségével a különbség abszolút értékével számolok. 
+            De ezt pár hibás futtatás után ki kellett, hogy szedjem, mivel mint kiderült, C-ben ez csak <type>int</type> típust tud kezelni, azaz egész számokat. Viszont a <varname>PR</varname> 
+            és <varname>PRv</varname> is <type>double</type> típus így nem lenne szerencsés konvertálni. Így kénytelen vagyok a négyzetértékkel számolni, majd végül abból gyököt vonni, ami ugyan azt 
+            az eredményt adja, hogy csak pozitív értéket vehet fel vagy nullát (mivel hogy két negatív szám szorzata pozitív, az pedig nem fordulhat elő, hogy egyik negatív míg a másik pozitív, hisz
+            ugyan az a művelet). Megjegyzem, hogy az előbb említett két függvény indokolja a <varname>math.h</varname> headert és a -lm kapcsolót a fordításhoz. 
+        </para>
+        <para>
+            Van még itt egy <function>kiir()</function>, de ez csak szimplán kiiratja a 4 darab oldal pagerank értékét. 
+        </para>
+        <programlisting language="c"><![CDATA[
+            int main(void)
+            {
+                double L[4][4] = 
+                {
+                {0.0, 0.0, 1.0/3.0, 0.0},
+                {1.0, 1.0/2.0, 1.0/3.0, 1.0},
+                {0.0, 1.0/2.0, 0.0, 0.0},
+                {0.0, 0.0, 1.0/3.0, 0.0}
+                };
+            
+                double PR[4] = {0.0, 0.0, 0.0, 0.0};
+                double PRv[4] = {1.0/4.0, 1.0/4.0, 1.0/4.0, 1.0/4.0};
+            
+                for(;;)
+                {
+                    for(int i = 0; i < 4; i++)
+                    {
+                        PR[i] = PRv[i];
+                    }
+                    for(int i = 0; i < 4; i++)
+                    {
+                        PRv[i] = 0;
+                        for(int j = 0; j < 4; j++)
+                        {
+                            PRv[i] += L[i][j] * PR[j];                
+                        }
+                    }
+                    if(distance(PR, PRv, 4) < 0.00001)
+                    {
+                        break;
+                    }
+                }
+                kiir (PR, 4);
+                return 0;
+            }
+            ]]></programlisting>
+        <para>
+            Itt először nézzük meg miből élünk. Van itt egy <varname>L</varname> szükszavú elnevezésű <type>double</type> típusú mátrixunk, mely a linkeket tartalmazza. Van még nekünk két szintén 
+            <type>double</type> típusú tömbünk <varname>PR</varname> és <varname>PRv</varname> néven. Ezek a pagerank értéket tartalmazzák, az egyik a jelenlegit (<varname>PR</varname>), a másik 
+            az iteráció előző körében szereplő pagerank értékét mutatja az oldalinknak (<varname>PRv</varname>).
+        </para>
+        <para>
+            A következő rész a végtelenciklusunk, ahol a munka oroszlánrésze zajlik.
+        </para>
+        <programlisting language="c"><![CDATA[
+                    for(int i = 0; i < 4; i++)
+                    {
+                        PR[i] = PRv[i];
+                    }
+            ]]>
+        </programlisting>
+        <para>
+            Itt egyszerűen átadjuk a pagerank értékeket az előző körből a jelenleginek (ezért fontos, hogy a <varname>PRv</varname>-nek legyen kezdőértéke).
+        </para>
+        <programlisting language="c"><![CDATA[
+            for(int i = 0; i < 4; i++)
+                    {
+                        PRv[i] = 0;
+                        for(int j = 0; j < 4; j++)
+                        {
+                            PRv[i] += L[i][j] * PR[j];                
+                        }
+                    }
+            ]]>
+        </programlisting>
+        <para>
+            Itt következik egy dupla for ciklus. Ez azért fontos mert itt mátrixal fogunk dolgozni, ami ugye egy két dimenziós tömb. Először lenullázzuk a <varname>PRv</varname>-t, majd 
+            új értéket adunk neki, azáltal, hogy a jelenlegi <varname>PR</varname> minden elemét összeszorozzuk az <varname>L</varname> linkmátrixal (mátrix szorzása vektorral). 
+        </para>
+        <programlisting language="c"><![CDATA[
+            if(distance(PR, PRv, 4) < 0.00001)
+                    {
+                        break;
+                    }
+                }
+                kiir (PR, 4);
+                return 0;
+            ]]>
+        </programlisting>
+        <para>
+            Végül de nem utolsó sorban ez az <type>if</type>. Az elején taglaltam, hogy ez a számítás a végtelenig mehetne és hogy ezt elkerüljük felhasználjuk a damp factort (a 0.00001 az). 
+            Tehát ha a <function>distance()</function> értéke eléggé megközelíti a nullát akkor egyszerűen megszakítjuk a végtelen ciklust (break) és kiírjuk az eredményt a felhasználónak.  
+        </para>
+        <para>
+            Fordítás: <screen>gcc PageRank.c -o pr -lm</screen>
+        </para>
+        <para>
+            Kimenet: 
+            <screen>
+                <![CDATA[ 
+                PageRank [0]: 0.090907
+                PageRank [1]: 0.545460
+                PageRank [2]: 0.272725
+                PageRank [3]: 0.090907
+                ]]>
+            </screen>
         </para>
     </section>
                                                                                                                                                                                                                                                                                                                                                         
@@ -550,6 +737,148 @@ false]]></screen>
             hanem az ajtók esélyei, maradnak az eredetiek, viszont mikor Monty felfedi az egyik ajtót, akkor viszont annak az esélyei,
             átszállnak a megmaradt ajtóra, amivel jelentősen romlanak eredeti esélyeink (1/3:2/3).
         </para>
+        <programlisting language="R">
+            <![CDATA[
+            trials=1000000
+            trial = sample(1:3, trials, replace=T)
+            player = sample(1:3, trials, replace=T)
+            host=vector(length = trials)
+
+            for (i in 1:trials) 
+            {
+
+                if(trial[i]==player[i])
+                {
+                
+                    leftOver=setdiff(c(1,2,3), trial[i])
+                
+                }
+                else
+                {
+                
+                    leftOver=setdiff(c(1,2,3), c(trial[i], player[i]))
+                
+                }
+
+                host[i] = leftOver[sample(1:length(leftOver),1)]
+
+            }
+
+            stayingChance= which(trial==player)
+            changingVec=vector(length = trials)
+
+            for (i in 1:trials) 
+            {
+
+                changeIndexes = setdiff(c(1,2,3), c(host[i], player[i]))
+                changingVec[i] = changeIndexes[1]
+                
+            }
+
+            changingChance = which(trial==changingVec)
+
+
+            sprintf("Kiserletek szama: %i", trials)
+            length(stayingChance)
+            length(changingChance)
+            length(stayingChance)/length(changingChance)
+            length(stayingChance)+length(changingChance)
+                        ]]>
+    </programlisting>
+    <para>
+        Daraboljuk fel egy kicsit: 
+    </para>
+    <programlisting language="R">
+        <![CDATA[ 
+        trials=1000000
+        trial = sample(1:3, trials, replace=T)
+        player = sample(1:3, trials, replace=T)
+        host=vector(length = trials)
+        ]]>
+    </programlisting>
+    <para>
+        Beállítjuk a kisérletek számát egymillióra, majd kisorsoljuk a nyertes ajtót és a játékos tippjét (nem egyet, hanem 1000000 darabot) majd elkészítünk egy vektort. Ezután jön a játék első 
+        köre: 
+    </para>
+    <programlisting language="R">
+        <![CDATA[
+        for (i in 1:trials) 
+        {
+
+            if(trial[i]==player[i])
+            {
+            
+                leftOver=setdiff(c(1,2,3), trial[i])
+            
+            }
+            else
+            {
+            
+                leftOver=setdiff(c(1,2,3), c(trial[i], player[i]))
+            
+            }
+
+            host[i] = leftOver[sample(1:length(leftOver),1)]
+
+        }
+        ]]>
+    </programlisting>
+    <para>
+        Megvizsgálunk két eshetőséget mielőtt feltárunk egy ajtót. Az első hogy a játékos bár nem tudja, de telibe eltalálta a nyertes ajtót, ilyenkor a fennmaradt két ajtó kerül a listánkra, 
+        mint hátralévő. 
+        A második, hogy másik ajtóra tippelt, ilyenkor egyszerűen a harmadik, még egyik fél által sem választott ajtót használjuk. Ehhez mindkét esetben a <function>setdiff()</function> függvényt 
+        alkalmazzuk, amely a matematikai halmaz elmélet alapján két halmaz különbségét határozza meg. Ezeket az ajtókat eltároljuk a <varname>leftOver</varname>-be, hogy majd a <varname>host</varname>-ban 
+        kiválasztjuk hogy a maradék egy vagy két ajtó közül melyiket fedjük fel jelképesen, azaz melyik esik ki a játékból. 
+    </para>
+    <programlisting language="R">
+        <![CDATA[
+            stayingChance= which(trial==player)
+            changingVec=vector(length = trials)
+
+            for (i in 1:trials) 
+            {
+
+                changeIndexes = setdiff(c(1,2,3), c(host[i], player[i]))
+                changingVec[i] = changeIndexes[1]
+                
+            }
+
+            changingChance = which(trial==changingVec)
+        ]]>
+    </programlisting>
+    <para>
+        A <varname>stayingChance</varname>-be eltároljuk, hogy az összes esetből hányszor nyernénk, ha nem változtatunk, tehát ha elsőre eltatlájuk. Aztán egy forciklusban végig megyünk az összes eseten 
+        és megnézzük, hogy mi lesz akkor ha ajtót váltunk. Az új ajtó indexe a <varname>changeIndexes</varname>-be kerül, azáltal, hogy megnézzük, hogy melyik az az ajtó, ami megmarad, ha kivesszük a 
+        választott ajtónkat és a feltárt ajtót. Majd a <varname>changingVec</varname> vektorban eltároljuk ezeket az indexeket. 
+        Végül a <varname>changingChance</varname>-ben megvizsgáljuk, hogy ajtócserével hány esetben nyernénk. 
+    </para>
+    <programlisting language="R">
+        <![CDATA[
+        sprintf("Kiserletek szama: %i", trials)
+        length(stayingChance)
+        length(changingChance)
+        length(stayingChance)/length(changingChance)
+        length(stayingChance)+length(changingChance)
+        ]]>
+    </programlisting>
+    <para>
+        Végül pedig kiíratjuk a kapott eredményeket. Először kiírjuk a kísérletek számát, majd hogy hány esetben nyert az ajtó váltás nélküli (length(stayingChance)). Ezután jön hogy hány esetben 
+        nyert az ajtóváltással (length(changingChance)). Végül pedig kis ellenörzésként össze van hasonlítva, hogy az első érték majdnem a fele a másodiknak és hogy a kettő összege valóban egyezik 
+        a kísérletek számával. 
+    </para>
+	<para>
+		Lássuk a futtatást:
+	</para>
+	<screen>
+        <![CDATA[ 
+        [1] "Kiserletek szama: 1000000"
+        [1] 333982
+        [1] 666018
+        [1] 0.5014609
+        [1] 1000000
+        ]]>
+	</screen>
+        
     </section>
 
     <section xml:id="Brun">
@@ -563,7 +892,132 @@ false]]></screen>
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R">https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R</link>
         </para>
-
+        <para>
+            A Brun tétel röviden azt mondja ki, hogy az ikerprímek reciprokértéke egy speciális konstanshoz tart, azaz konvergál. Ez a konstans az úgynevezett Brun-konstans vagy Brun szám, melynek 
+            a pontos értékét csak becsülni tudjuk, de kb. 1.902160583104. De mik is azok az ikerprímek? Olyan prímszám párok, melyeknek különbsége pontosan 2, ilyen például a 3 és az 5 vagy a 11 és 13.
+            Azt már Euklidesz bebizonyította, hogy a prím számok száma végtelen, viszont az még a mai napig kérdéses, hogy vajon a ikerprímek száma is végtelen-e. És akkor még nem is beszéltünk 
+            a prímnégyesekről, ami megint csak egy különleges esett, ugyani azok olyan prímek ahol teljesűl, hogy ha n prím, akkor 10n+1, 10n+3, 10n+7, 10n+9 is prímek. Na de ne térjünk el a tárgytól. 
+            Az ikerprímek helyzete azért is macerás, mert könnyű lenne rávágni, hogy ha a prímek végtelenek akkor az ikerprímek is, de ez nem  ilyen egyszerű, mert minél nagyobb értékeket vizsgálunk, annál 
+            nagyobbak a prímek közti távolságok is (tehát egyre ritkábbak lesznek az ikrek). A kérdés hogy van-e vége és ebben talán segít kicsit a Brun tétel.   
+        </para>
+        <para>
+            A következő példaprogramban 1.000.000 adjuk össze az ikrek reciprokját, majd végül egy koordináta rendszerben ábrázoljuk, hogy hogyan jut egyre közelebb az érték a Brun-konstanshoz. 
+            Kezdjük is az elemzést. 
+        </para>
+        <programlisting language="R">
+            <![CDATA[#   Copyright (C) 2019  Dr. Norbert Bátfai, nbatfai@gmail.com
+            #
+            #   This program is free software: you can redistribute it and/or modify
+            #   it under the terms of the GNU General Public License as published by
+            #   the Free Software Foundation, either version 3 of the License, or
+            #   (at your option) any later version.
+            #
+            #   This program is distributed in the hope that it will be useful,
+            #   but WITHOUT ANY WARRANTY; without even the implied warranty of
+            #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+            #   GNU General Public License for more details.
+            #
+            #   You should have received a copy of the GNU General Public License
+            #   along with this program.  If not, see <http://www.gnu.org/licenses/>
+            library(matlab)
+            stp <- function(x){
+                primes = primes(x)
+                diff = primes[2:length(primes)]-primes[1:length(primes)-1]
+                idx = which(diff==2)
+                t1primes = primes[idx]
+                t2primes = primes[idx]+2
+                rt1plust2 = 1/t1primes+1/t2primes
+                return(sum(rt1plust2))
+            }
+            x=seq(13, 1000000, by=10000)
+            y=sapply(x, FUN = stp)
+            plot(x,y,type="b")
+            ]]>
+            </programlisting>    
+            <para>
+                A program Bátfai Norbert munkája és R nyelven íródott. A Monty Hall Paradoxonos feladat is szintén R nyelvben készült, mely szakspeciális programozási nyelv. 
+                Statisztikai kalkulációk és statisztikai ábrázolás során használják a leggyakrabban. 
+                Daraboljuk fel picit:     
+            </para>
+            <programlisting language="R">
+                <![CDATA[
+                library(matlab)
+                stp <- function(x){
+                    primes = primes(x)
+                    diff = primes[2:length(primes)]-primes[1:length(primes)-1]
+                    idx = which(diff==2)
+                    t1primes = primes[idx]
+                    t2primes = primes[idx]+2
+                    rt1plust2 = 1/t1primes+1/t2primes
+                    return(sum(rt1plust2))
+                }
+                ]]>
+            </programlisting> 
+            <para>
+                A licenceket most lecsíptem róla, azt nem részletezném. 
+                Amivel kezdünk, az az hogy meghívjuk a matlab függvénykönyvtárat. Utána létrehozzuk az <function>stp</function> függvényt. 
+            </para>
+            <programlisting language="R">
+                <![CDATA[
+                    primes = primes(x)
+                ]]>
+            </programlisting> 
+            <para>
+                Elsőnek megkeressük a prímeket. 
+            </para>
+            <programlisting language="R">
+                <![CDATA[
+                diff = primes[2:length(primes)]-primes[1:length(primes)-1]
+                idx = which(diff==2)
+                ]]>
+            </programlisting> 
+            <para>
+                Megnézzük az egymást követő prímek közti különbséget amit eltárolunk a <varname>diff</varname>-ben, ha ez kettő, az azt jelenti, hogy a két prím ikerprímet alkot és 
+                eltároljuk az indexét az elsőnek, az <varname>idx</varname> változóba.  
+            </para>
+            <programlisting language="R">
+                <![CDATA[
+                t1primes = primes[idx]
+                t2primes = primes[idx]+2
+                ]]>
+            </programlisting>
+            <para>
+                Az előző <varname>idx</varname> indexértékkel megállapítjuk a két prímet. 
+            </para> 
+            <programlisting language="R">
+                <![CDATA[
+                rt1plust2 = 1/t1primes+1/t2primes
+                return(sum(rt1plust2))
+                ]]>
+            </programlisting>
+            <para>
+                A két prímnek a reciprokát összeadjuk, ez lesz a <varname>rt1plust2</varname>, majd a függvény visszatér ennek a szummájával. 
+                Az <function>stp</function> ennyi volt, most pedig nézzük mi maradt még: 
+            </para>
+            <programlisting language="R">
+                <![CDATA[
+                x=seq(13, 1000000, by=10000)
+                y=sapply(x, FUN = stp)
+                plot(x,y,type="b")
+                ]]>
+            </programlisting>
+            <para>
+                Az <varname>x</varname>-be készítünk egy sorozatot 13-tól 1000000-ig a <function>seq()</function> függvénnyel. Az <varname>y</varname>-ban pedig összepárosítjuk az 
+                <varname>x</varname>-et az <function>stp</function>-vel, azaz meghívjuk a függvényt. Majd végül de nem utolsósorban a <function>plot</function> segítségével ábrázoljuk a számításainkat.
+                Ha minden jól ment akkor ezt kell kapnunk: 
+            </para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="Pics/BrunKorok.png" scale="50" />
+                </imageobject>
+                <textobject>
+                    <phrase>A B<subscript>2</subscript> konstans közelítése</phrase>
+                </textobject>
+            </mediaobject>
+            <para>
+                Gyönyörűen mutatja, hogy hogyan közelíti meg a Brun-konstanst. 
+            </para>
+        <!--
         <para>
             A természetes számok építőelemei a prímszámok. Abban az értelemben, 
             hogy minden természetes szám előállítható prímszámok szorzataként.
@@ -654,11 +1108,8 @@ false]]></screen>
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>
-
 library(matlab)
-
 stp <- function(x){
-
     primes = primes(x)
     diff = primes[2:length(primes)]-primes[1:length(primes)-1]
     idx = which(diff==2)
@@ -667,7 +1118,6 @@ stp <- function(x){
     rt1plust2 = 1/t1primes+1/t2primes
     return(sum(rt1plust2))
 }
-
 x=seq(13, 1000000, by=10000)
 y=sapply(x, FUN = stp)
 plot(x,y,type="b")
@@ -792,7 +1242,9 @@ plot(x,y,type="b")]]>
             Ezek után érdemes lehet felvetni a kérdést, hogy ha az ikerprímek (p; p+2) reciprokainak összege
             a B<subscript>2</subscript> konstans konvergálnak, akkor vajon a prímnégyesek (p; p+2; p+6; p+8) reciprokai is konvergálnak-e
             valahova? 
-        </para>                             
+        </para> 
+    -->
+
         <tip>
             <title>Werkfilm</title>
             <itemizedlist>
@@ -1043,4 +1495,5 @@ plot(x,y,type="b")]]>
             ]]>
         </programlisting>
     </section>
-</chapter>                
+   
+</chapter>         
