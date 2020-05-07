@@ -1,0 +1,598 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Conway!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>Hangyaszimulációk</title>
+        <para>
+            Írj Qt C++-ban egy hangyaszimulációs programot, a forrásaidról utólag reverse engineering jelleggel
+            készíts UML osztálydiagramot is!
+        </para>
+        <para>
+            Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/10/10/myrmecologist">https://bhaxor.blog.hu/2018/10/10/myrmecologist</link>
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href=""></link>               
+        </para>
+        <para>
+            Ebben a feladatban a hangyák mozgását fogjuk szimulálni. Fontos megjegyezni, hogy a hangyák nem csak össze-vissza 
+            mozognak, hanem tájékozódnak. Méghozzá fejlett szaglásuk segítségével követik egymás feromon nyomát. Ennek főleg 
+            akkor van szerepe, ha valamelyik hangya talál valamit (pl. ételt), akkor a megfelelő szagminta kibocsátásával 
+            oda csalhatja a társait, hogy segítsenek. Ennek a legnagyobb szerepe ott van, hogy a hangyák mozgásának a tanulmányozásával 
+            megfigyelhetjük, hogy hogyan találják meg így a legrövidebb útvonalat. Ezek az ismeretek sokat segíthetnek azútkereső algoritmusoknak 
+            is (lásd. navmesh). 
+        </para>
+        <para>
+            Kezdésnek nézzük meg a hangyáinkat: 
+        </para> 
+        <programlisting language='c++'>
+            <![CDATA[ #ifndef ANT_H
+            #define ANT_H
+            
+            class Ant
+            {
+            
+            public:
+                int x;
+                int y;
+                int dir;
+            
+                Ant(int x, int y): x(x), y(y) {
+                    
+                    dir = qrand() % 8;
+                    
+                }
+            
+            };
+            
+            typedef std::vector<Ant> Ants;
+            
+            #endif]]>
+        </programlisting>   
+        <para>
+            A main.cpp-ben első sorban lekezeljük a lehetséges argumentumokat, a program hívásához (úgy mint az ablak méretét, 
+            a hangyák sebességét, számát, stb). Ezeket pedig átadjuk az ablak elkészítéséhez. Itt még szerepel a qsrand, ami a 
+            véletlenszerű irány meghatározásához fog használni a hangyánk.   
+        </para>
+        <para>
+            Nézzük meg az antwin.cpp-t: 
+        </para>   
+        <programlisting language='c++'><![CDATA[
+            void AntWin::paintEvent ( QPaintEvent* )
+            {
+                QPainter qpainter ( this );
+            
+                grid = grids[gridIdx];
+            
+                for ( int i=0; i<height; ++i ) {
+                    for ( int j=0; j<width; ++j ) {
+            
+                        double rel = 255.0/max;
+            
+                        qpainter.fillRect ( j*cellWidth, i*cellHeight,
+                                            cellWidth, cellHeight,
+                                            QColor ( 255 - grid[i][j]*rel,
+                                                     255,
+                                                     255 - grid[i][j]*rel) );
+            
+                        if ( grid[i][j] != min )
+                        {
+                            qpainter.setPen (
+                                QPen (
+                                    QColor ( 255 - grid[i][j]*rel,
+                                             255 - grid[i][j]*rel, 255),
+                                    1 )
+                            );
+            
+                            qpainter.drawRect ( j*cellWidth, i*cellHeight,
+                                                cellWidth, cellHeight );
+                        }
+            
+            
+            
+                        qpainter.setPen (
+                            QPen (
+                                QColor (0,0,0 ),
+                                1 )
+                        );
+            
+                        qpainter.drawRect ( j*cellWidth, i*cellHeight,
+                                            cellWidth, cellHeight );
+            
+                    }
+                }
+            
+                for ( auto h: *ants) {
+                    qpainter.setPen ( QPen ( Qt::black, 1 ) );
+            
+                    qpainter.drawRect ( h.x*cellWidth+1, h.y*cellHeight+1,
+                                        cellWidth-2, cellHeight-2 );
+            
+                }
+            
+                qpainter.end();
+            }]]>
+            </programlisting>
+            <para>
+                Itt a <function>paintEvent</function> van kiemelve, mely a GUI újrarajzolásáért felel (példáúl mikor az update függvény 
+                lefut). Amit csinál az alapvetőleg egyszerű, mert csak kirajzolja a világot, a feromon nyomot és a hangyáinkat. 
+            </para>
+            <para>
+                Folyt. köv. 
+            </para>     
+    </section>        
+    <section>
+        <title>Java életjáték</title>
+        <para>
+            Írd meg Java-ban a John Horton Conway-féle életjátékot, 
+            valósítsa meg a sikló-kilövőt!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href=""></link>               
+        </para>
+        <para>
+            Az életjáték (Game of Life) John Conway Brit matematikus munkája. Játék ként van említve, de a passzív játék megnevezés 
+            talán ponstosabb, ugyanis a játékosnak a kezdő alakzat megrajzolásán túl nem sok szerepe van a játékban, inkább megfigyelőként 
+            vsz részt. Érdekes, hogy egy időben ez egy aránylag népszerű játék volt Amerikában. 
+        </para>        
+        <para>
+            A játék menete: 
+            Adott egy tábla (négyzetháló) ahova a játékos pontokat, úgynevezett sejteket helyezhet el. A játék körökből áll, melyek 
+            generációk ként van meghivatkozva. Ezekben a körökben a sejtünk vagy túlél, vagy elpusztúl, vagy szaporodik. Hogy az adott körben 
+            melyik törénik azt három egyszerű szabály határozza meg, a szomszédok számának függvényében (egy sejtnek 8 szomszéda lenne):  
+        </para>    
+        <itemizedlist mark='bullet'>
+            <listitem>
+                <para>
+                    Egy sejt 2 vagy 3 élő szomszéd esetében életben marad.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Egy sejt elpusztul ha 2-nél kevesebb vagy 3-nál több élő szomszédja van
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Egy új sejt születik, ha pontosan 3 élő szomszédja van.
+                </para>
+            </listitem>
+        </itemizedlist>  
+        <para>
+            Ezekkel az egyszerű szabályokkal viszont lehetőségünk van olyan speciális alakzatokra is mint példáúl a sikló (glider) 
+            melynek a különlegessége, hogy pár lépésen belül vissza alakúl saját magává, viszont pár egységgel odébb, ezáltal mozog.
+        </para>
+        <para>
+            A szabályok és a speciális alakzatok kihasználásával pedig létrehozhatunk akár komplex automatákat. Egy ilyet mutat be az alábbi 
+            program is. Ennek az automatának a neve Glider Gun (siklóágyú), melyet Bill Gosper alkotott meg és remekűl reprezentálja, hogy 
+            mennyi mindent lehet csinálni még egy ilyen egyszerű játékkal is. 
+        </para>         
+    </section> 
+    
+    <section>
+        <title>Extra: Sejtautomaták a játékiparban: </title>
+        <para>
+            Lehet pár embernek meglepő, de a játékiparban sok olyan algoritmust használnak, melyről nem is gondolnánk hogy erre is alkalmazható. Ilyenek a sejtautomaták is, amilyen Conway életjátéka 
+            is. Ebben a példában  Sebastian Lague mutatja be, hogy hogyan is lehet ezt az algoritmust felhasználni procedurálisan generált barlangok készítéséhez. Érdemes lehet megnézni más videóit is, 
+            mert nagyon igényes és érdekes tartalmakat készít. 
+            A videó: <link xlink:href="https://youtu.be/v7yyZZjF1z4">https://youtu.be/v7yyZZjF1z4</link>
+            A Github repoja: <link xlink:href="https://github.com/SebLague/Procedural-Cave-Generation">https://github.com/SebLague/Procedural-Cave-Generation</link>
+        </para>
+        <para>
+            Ebből a hangyabolyból...
+        </para>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/CellAutoFrom.png" scale="25" />
+            </imageobject>
+            <textobject>
+                <phrase>Ebből a hangyabolyból...</phrase>
+            </textobject>
+        </mediaobject>
+        <para>
+            ...ez a szép barlang lett:
+        </para>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/CellAutoTo.png" scale="25" />
+            </imageobject>
+            <textobject>
+                <phrase>...ez a szép barlang lett</phrase>
+            </textobject>
+        </mediaobject>
+        <para>
+            Mivel ez egy nyílvános repó és tutoriál anyag, ezért remélem nem gond, ha megosztom a forráskódot elemzés céljára. Minden jog fenttartva Sebastian részére. 
+        </para>
+        <programlisting>
+<![CDATA[
+using UnityEngine;
+using System.Collections;
+using System;
+
+public class MapGenerator : MonoBehaviour {
+
+	public int width;
+	public int height;
+
+	public string seed;
+	public bool useRandomSeed;
+
+	[Range(0,100)]
+	public int randomFillPercent;
+
+	int[,] map;
+
+	void Start() {
+		GenerateMap();
+	}
+
+	void Update() {
+		if (Input.GetMouseButtonDown(0)) {
+			GenerateMap();
+		}
+	}
+
+	void GenerateMap() {
+		map = new int[width,height];
+		RandomFillMap();
+
+		for (int i = 0; i < 5; i ++) {
+			SmoothMap();
+		}
+	}
+
+
+	void RandomFillMap() {
+		if (useRandomSeed) {
+			seed = Time.time.ToString();
+		}
+
+		System.Random pseudoRandom = new System.Random(seed.GetHashCode());
+
+		for (int x = 0; x < width; x ++) {
+			for (int y = 0; y < height; y ++) {
+				if (x == 0 || x == width-1 || y == 0 || y == height -1) {
+					map[x,y] = 1;
+				}
+				else {
+					map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent)? 1: 0;
+				}
+			}
+		}
+	}
+
+	void SmoothMap() {
+		for (int x = 0; x < width; x ++) {
+			for (int y = 0; y < height; y ++) {
+				int neighbourWallTiles = GetSurroundingWallCount(x,y);
+
+				if (neighbourWallTiles > 4)
+					map[x,y] = 1;
+				else if (neighbourWallTiles < 4)
+					map[x,y] = 0;
+
+			}
+		}
+	}
+
+	int GetSurroundingWallCount(int gridX, int gridY) {
+		int wallCount = 0;
+		for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX ++) {
+			for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY ++) {
+				if (neighbourX >= 0 && neighbourX < width && neighbourY >= 0 && neighbourY < height) {
+					if (neighbourX != gridX || neighbourY != gridY) {
+						wallCount += map[neighbourX,neighbourY];
+					}
+				}
+				else {
+					wallCount ++;
+				}
+			}
+		}
+
+		return wallCount;
+	}
+
+
+	void OnDrawGizmos() {
+		if (map != null) {
+			for (int x = 0; x < width; x ++) {
+				for (int y = 0; y < height; y ++) {
+					Gizmos.color = (map[x,y] == 1)?Color.black:Color.white;
+					Vector3 pos = new Vector3(-width/2 + x + .5f,0, -height/2 + y+.5f);
+					Gizmos.DrawCube(pos,Vector3.one);
+				}
+			}
+		}
+	}
+
+} 
+]]>
+        </programlisting>
+    </section>
+
+    <section>
+        <title>Qt C++ életjáték</title>
+        <para>
+            Most Qt C++-ban!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href=""></link>               
+        </para>
+        <para>
+            A játék alapmechanikáját már az előző feladatban tárgyaltuk, ezért itt már nem térnék ki rá. Inkább nézzük meg részenként. 
+            Kezdjük a sejtablak.cpp-vel: 
+        </para>       
+        <programlisting language='c++'><![CDATA[
+            SejtAblak::SejtAblak(int szelesseg, int magassag, QWidget *parent)
+            : QMainWindow(parent)
+            {
+            setWindowTitle("A John Horton Conway-féle életjáték");
+            
+            this->magassag = magassag;
+            this->szelesseg = szelesseg;
+
+            
+            cellaSzelesseg = 6;
+            cellaMagassag = 6;
+
+            setFixedSize(QSize(szelesseg*cellaSzelesseg, magassag*cellaMagassag));
+            
+            racsok = new bool**[2];
+            racsok[0] = new bool*[magassag];
+            for(int i=0; i<magassag; ++i)
+                racsok[0][i] = new bool [szelesseg];
+            racsok[1] = new bool*[magassag];
+            for(int i=0; i<magassag; ++i)
+                racsok[1][i] = new bool [szelesseg];
+
+            racsIndex = 0;
+            racs = racsok[racsIndex];
+
+            // A kiinduló racs minden cellája HALOTT
+            for(int i=0; i<magassag; ++i)
+                for(int j=0; j<szelesseg; ++j)
+                racs[i][j] = HALOTT;
+                // A kiinduló racsra "ELOlényeket" helyezünk
+                //siklo(racs, 2, 2);
+
+                sikloKilovo(racs, 5, 60);
+
+            eletjatek = new SejtSzal(racsok, szelesseg, magassag, 120, this);
+
+            eletjatek->start();
+        
+            }]]>
+        </programlisting>
+        <para>
+            Itt alapozzuk meg az ablakunkat. Meghatározzunk olyanokat, mint az ablak dimenzióit és a cellaméretet. Létrehozzuk a két rácsunkat. 
+            A rácspontokat beállítjuk halott sejteknek, mivel majd csak ezután helyezzük el az automatánkat. Ezután meghívjuk a <function>sikloKilovo</function>
+            függvényt, amely egyszerűen csak meghatározza, hogy a sikló ágyú kiinduló állapotához, mely sejteknek kell élőnek lennie és ezeket a 
+            rácspontokat halottról élőre állítja. Végül elindítjuk magát a játékot. 
+        </para>
+        <para>
+            Itt még található egy <function>paintEvent</function> ami ugyan úgy mint a hangyaszimuláció esetén, itt is a GUI kirajzolásáért és 
+            frissitésenkénti újrarajzolásáért felel. 
+        </para>
+        <programlisting language='c++'>
+            <![CDATA[ 
+            void SejtAblak::paintEvent(QPaintEvent*) {
+                QPainter qpainter(this);
+                
+                // Az aktuális
+                bool **racs = racsok[racsIndex];
+                // racsot rajzoljuk ki:
+                for(int i=0; i<magassag; ++i) { // végig lépked a sorokon
+                  for(int j=0; j<szelesseg; ++j) { // s az oszlopok
+                    // Sejt cella kirajzolása
+                    if(racs[i][j] == ELO)
+                  qpainter.fillRect(j*cellaSzelesseg, i*cellaMagassag,
+                            cellaSzelesseg, cellaMagassag, Qt::black);
+                  else
+                    qpainter.fillRect(j*cellaSzelesseg, i*cellaMagassag,
+                              cellaSzelesseg, cellaMagassag, Qt::white);
+                    qpainter.setPen(QPen(Qt::gray, 1));
+                  
+                  qpainter.drawRect(j*cellaSzelesseg, i*cellaMagassag,
+                            cellaSzelesseg, cellaMagassag);
+                  }
+                }
+                
+                qpainter.end();
+              }]]>
+        </programlisting>
+        <para>
+            Ezen túl van még egy destruktorunk és egy vissza függvény ami csak lépteti a játékot és frissití az update függvénnyel, ezáltal 
+            kikényszerítve az újrarajzolást. 
+        </para>
+        <programlisting language='c++'>
+            <![CDATA[ 
+            SejtAblak::~SejtAblak()
+            {
+            delete eletjatek;
+            
+            for(int i=0; i<magassag; ++i) {
+                delete[] racsok[0][i];
+                delete[] racsok[1][i];
+            }
+            
+            delete[] racsok[0];
+            delete[] racsok[1];
+            delete[] racsok;
+            
+            
+            }
+
+            void SejtAblak::vissza(int racsIndex)
+            {
+            this->racsIndex = racsIndex;
+            update();
+            }]]>
+        </programlisting>
+        <para>
+            A sejtszal.cpp tartalmazza lényegében az alapszabályokat. Itt a <function>szomszedokSzama</function> meghatározza a szomszédok 
+            számát, mely segítségével eldönthetjük, hogy az adott körben a sejt életben marad-e vagy szaporodik-e vagy esetleg elpusztul. 
+        </para>
+        <programlisting language='c++'>
+            <![CDATA[ 
+            int SejtSzal::szomszedokSzama(bool **racs,
+                              int sor, int oszlop, bool allapot) {
+                int allapotuSzomszed = 0;
+                // A nyolcszomszédok végigzongorázása:
+                for(int i=-1; i<2; ++i)
+                    for(int j=-1; j<2; ++j)
+                        // A vizsgált sejtet magát kihagyva:
+                        if(!((i==0) && (j==0))) {
+                    // A sejttérből szélének szomszédai
+                    // a szembe oldalakon ("periódikus határfeltétel")
+                    int o = oszlop + j;
+                    if(o < 0)
+                        o = szelesseg-1;
+                    else if(o >= szelesseg)
+                        o = 0;
+
+                    int s = sor + i;
+                    if(s < 0)
+                        s = magassag-1;
+                    else if(s >= magassag)
+                        s = 0;
+
+                    if(racs[s][o] == allapot)
+                        ++allapotuSzomszed;
+                }
+
+            return allapotuSzomszed;
+        }]]>
+        </programlisting>
+        <para>
+            Az <function>IdoFejlodes</function> pedig meghatározza, hogy a szomszéd szám alapjáán ténylegesen mi lesz a sejttel. Ugye az 
+            előbbi bekezdés alapján 3 állapot álhat elő. 
+        </para>
+        <programlisting language='c++'>
+            <![CDATA[ 
+            void SejtSzal::idoFejlodes() {
+
+                bool **racsElotte = racsok[racsIndex];
+                bool **racsUtana = racsok[(racsIndex+1)%2];
+            
+                for(int i=0; i<magassag; ++i) { // sorok
+                    for(int j=0; j<szelesseg; ++j) { // oszlopok
+            
+                        int elok = szomszedokSzama(racsElotte, i, j, SejtAblak::ELO);
+            
+                        if(racsElotte[i][j] == SejtAblak::ELO) {
+                            /* Élő élő marad, ha kettő vagy három élő
+                         szomszedja van, különben halott lesz. */
+                            if(elok==2 || elok==3)
+                                racsUtana[i][j] = SejtAblak::ELO;
+                            else
+                                racsUtana[i][j] = SejtAblak::HALOTT;
+                        }  else {
+                            /* Halott halott marad, ha három élő
+                         szomszedja van, különben élő lesz. */
+                            if(elok==3)
+                                racsUtana[i][j] = SejtAblak::ELO;
+                            else
+                                racsUtana[i][j] = SejtAblak::HALOTT;
+                        }
+                    }
+                }
+                racsIndex = (racsIndex+1)%2;
+            }
+            ]]>
+        </programlisting>          
+    </section>        
+    <section>
+        <title>BrainB Benchmark</title>
+        <para>
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href=""></link>               
+        </para>
+        <para>
+            Ennek a játéknak a lényege, hogy játékosok, esportolók kognitív képességeit hivatott felmérni. A játék 10 percig tart és a 
+            feladat egyszerű. A samu nevű entitáson kell tartanunk a mutót amíg csak tudjuk. Viszont samu mozog és bizonyos időközönként új 
+            entitások jelennek meg, hogy megzavarják a játékost. És ha ez nem lenne elég, ugye a játék 10 percig tart, így ez is kihívást jelenthet 
+            a játékosok számára. 
+        </para>
+        <para>
+            A játék legfontosabb mechanikája a BrainBWin.cpp-ben található, méghozzá az <function>updateHeroes</function> függvény. 
+        </para>   
+        <programlisting language='c++'>
+            <![CDATA[ void BrainBWin::updateHeroes ( const QImage &image, const int &x, const int &y )
+            {
+            
+                    if ( start && !brainBThread->get_paused() ) {
+            
+                            int dist = ( this->mouse_x - x ) * ( this->mouse_x - x ) + ( this->mouse_y - y ) * ( this->mouse_y - y );
+            
+                            if ( dist > 121 ) {
+                                    ++nofLost;
+                                    nofFound = 0;
+                                    if ( nofLost > 12 ) {
+            
+                                            if ( state == found && firstLost ) {
+                                                    found2lost.push_back ( brainBThread->get_bps() );
+                                            }
+            
+                                            firstLost = true;
+            
+                                            state = lost;
+                                            nofLost = 0;
+                                            //qDebug() << "LOST";
+                                            //double mean = brainBThread->meanLost();
+                                            //qDebug() << mean;
+            
+                                            brainBThread->decComp();
+                                    }
+                            } else {
+                                    ++nofFound;
+                                    nofLost = 0;
+                                    if ( nofFound > 12 ) {
+            
+                                            if ( state == lost && firstLost ) {
+                                                    lost2found.push_back ( brainBThread->get_bps() );
+                                            }
+            
+                                            state = found;
+                                            nofFound = 0;
+                                            //qDebug() << "FOUND";
+                                            //double mean = brainBThread->meanFound();
+                                            //qDebug() << mean;
+            
+                                            brainBThread->incComp();
+                                    }
+            
+                            }
+            
+                    }
+                    pixmap = QPixmap::fromImage ( image );
+                    update();
+            }]]>
+        </programlisting>      
+        <para>
+            Ha a játék el van indítva és nincs szüneteltetve akkor folyamatosan figyeli ez a függvény, hogy a játékos épp samura mutat-s vagy 
+            elvesztette és ha igen, akkor hányszor, továbbá, hogy hászor találja meg elvesztés után. Azt hogy elvesztette-e samut azt úgy hatűrozza meg, hogy
+             figyeli samu és a kurzor közti távolságot. Ha ez meghaladja a 121 egységet akkor elveszítjük samut. 
+        </para>               
+    </section>    
+    <section>
+        <title>Malmo</title>
+        <para>
+            Megoldás videó: <link xlink:href="https://youtu.be/WRDt8ljy_hI">https://youtu.be/WRDt8ljy_hI</link>
+        </para>
+    </section>    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                

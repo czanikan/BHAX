@@ -1,0 +1,235 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Schwarzenegger!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>Szoftmax Py MNIST</title>
+        <tip>
+            <title>Filmajánló</title>
+            <para>
+                West World 
+                <link xlink:href="https://www.imdb.com/title/tt0475784/">https://www.imdb.com/title/tt0475784/</link>
+            </para>          
+        </tip>
+        <para>
+            Python
+        </para>
+        <para>
+            Megoldás videó: <link xlink:href="https://youtu.be/j7f9SkJR3oc">https://youtu.be/j7f9SkJR3oc</link>      
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href="https://github.com/tensorflow/tensorflow/releases/tag/v0.9.0">https://github.com/tensorflow/tensorflow/releases/tag/v0.9.0</link> (/tensorflow-0.9.0/tensorflow/examples/tutorials/mnist/), <link xlink:href="https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol">https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol</link>  
+        </para>
+        <para>
+            A Tensorflow egy nyílt forrású platform a gépi tanuláshoz. Rengeteg segédkönyvtárral és adatbázissal annak megkönnyítése 
+            érdekében. De mielőtt nagyon előreszaladnánk, mi is az a gépi tanulás? A gépi tanulás lényegében egy algoritmus amivel 
+            megetetünk sok-sok adatot (ún. training data)  amiből felépít aztán egy matematikai modellt. Felhasználása pedig szinte végtelen. 
+            Kezdve az emailek filterezésétől, a fordítóprogramokon át egészen az önvezető autókig. 
+        </para>
+        <para>
+            És mi az MNIST? 
+            Az MNIST egy aránylag nagy adatbázis mely kézzel írt arab számokat tartalmaz. 
+            Ebből tervezünk neki 60000 darabot megtanítani, majd 10000-rel megnézzük, hogy mennyire pontos. 
+        </para>
+    </section>        
+
+<!--
+    <section>
+        <title>Szoftmax R MNIST</title>
+        <para>
+            R            
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>
+    </section>        
+-->
+    
+    <section>
+        <title>Mély MNIST</title>
+        <para>
+            Python            
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Ez a program hasonló az előzőhöz. Csak itt az a cél hogy az általunk adott képen lévő számot ismerje fel. 
+            Kezdésként ugyan úgy megetetjük vele a 60000 darabú training data-t, majd az azokból felállított model segítségével próbál 
+            viszonyítani, hogy vajon a képen szereplő számjegy melyik lehet. Ehhez az input képet eltárolja numpy tömbként, hogy egyszerűbben 
+            lehessen vizsgálni. 
+        </para>
+        <programlisting language='python'>
+            <![CDATA[ 
+            import tensorflow as tf
+            from tensorflow.keras.models import Sequential
+            from tensorflow.keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
+            
+            from PIL import Image
+            import numpy as np
+            import sys
+            
+            #tf.compat.v1.enable_eager_execution(
+            #    config=None, device_policy=None, execution_mode=None
+            #)
+            
+            #physical_devices = tf.config.experimental.list_physical_devices('GPU')
+            #assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
+            #tf.config.experimental.set_memory_growth(physical_devices[0], True)
+            
+            (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+            
+            x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
+            x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
+            x_train = x_train.astype('float32')
+            x_test = x_test.astype('float32')
+            x_train /= 255
+            x_test /= 255
+            
+            model = Sequential()
+            model.add(Conv2D(28, kernel_size=(3,3), input_shape=(28, 28, 1)))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Flatten())
+            model.add(Dense(128, activation=tf.nn.relu))
+            model.add(Dropout(0.2))
+            model.add(Dense(10,activation=tf.nn.softmax))
+            
+            #tb_log_dir = "./cnn_tb"
+            #file_writer = tf.summary.create_file_writer(tb_log_dir)
+            #file_writer.set_as_default()
+            #tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=tb_log_dir, profile_batch=0)
+            
+            model.compile(optimizer='adam', 
+                          loss='sparse_categorical_crossentropy', 
+                          metrics=['accuracy'])
+            
+            #model.fit(x=x_train,y=y_train, epochs=10, callbacks=[tensorboard_callback])
+            model.fit(x=x_train,y=y_train, epochs=10)
+            
+            model.evaluate(x_test, y_test)
+            
+            input_image = np.array(Image.open(sys.argv[1]).getdata(0).resize((28, 28), 0))
+            
+            pred = model.predict(input_image.reshape(1, 28, 28, 1))
+            
+            print (pred)
+            
+            print("The number is = ", pred.argmax())
+            ]]>
+        </programlisting>
+        <screen>
+            <![CDATA[ 
+            2020-04-28 14:05:43.609568: W tensorflow/core/framework/cpu_allocator_impl.cc:81] Allocation of 31360000 exceeds 10% of system memory.
+            32/10000 [..............................] - ETA: 30s - loss: 0.0719 - accurac  
+            384/10000 [>.............................] - ETA: 3s - loss: 0.0667 - accuracy  
+            704/10000 [=>............................] - ETA: 2s - loss: 0.0466 - accuracy  
+            928/10000 [=>............................] - ETA: 2s - loss: 0.0426 - accuracy 
+            1184/10000 [==>...........................] - ETA: 2s - loss: 0.0681 - accuracy 
+            1536/10000 [===>..........................] - ETA: 2s - loss: 0.0837 - accuracy 
+            1888/10000 [====>.........................] - ETA: 1s - loss: 0.0865 - accuracy 
+            2272/10000 [=====>........................] - ETA: 1s - loss: 0.0898 - accuracy 
+            2656/10000 [======>.......................] - ETA: 1s - loss: 0.0920 - accuracy 
+            3008/10000 [========>.....................] - ETA: 1s - loss: 0.0881 - accuracy 
+            3360/10000 [=========>....................] - ETA: 1s - loss: 0.0837 - accuracy 
+            3744/10000 [==========>...................] - ETA: 1s - loss: 0.0840 - accuracy 
+            4128/10000 [===========>..................] - ETA: 1s - loss: 0.0877 - accuracy 
+            4512/10000 [============>.................] - ETA: 0s - loss: 0.0886 - accuracy 
+            4896/10000 [=============>................] - ETA: 0s - loss: 0.0871 - accuracy 
+            5248/10000 [==============>...............] - ETA: 0s - loss: 0.0817 - accuracy 
+            5600/10000 [===============>..............] - ETA: 0s - loss: 0.0783 - accuracy 
+            5920/10000 [================>.............] - ETA: 0s - loss: 0.0767 - accuracy 
+            6272/10000 [=================>............] - ETA: 0s - loss: 0.0755 - accuracy 
+            6656/10000 [==================>...........] - ETA: 0s - loss: 0.0756 - accuracy 
+            7040/10000 [====================>.........] - ETA: 0s - loss: 0.0721 - accuracy 
+            7392/10000 [=====================>........] - ETA: 0s - loss: 0.0691 - accuracy 
+            7680/10000 [======================>.......] - ETA: 0s - loss: 0.0667 - accuracy 
+            7968/10000 [======================>.......] - ETA: 0s - loss: 0.0643 - accuracy 
+            8288/10000 [=======================>......] - ETA: 0s - loss: 0.0622 - accuracy 
+            8672/10000 [=========================>....] - ETA: 0s - loss: 0.0604 - accuracy 
+            9056/10000 [==========================>...] - ETA: 0s - loss: 0.0606 - accuracy 
+            9440/10000 [===========================>..] - ETA: 0s - loss: 0.0581 - accuracy 
+            9792/10000 [============================>.] - ETA: 0s - loss: 0.0610 - accuracy
+            10000/10000 [==============================] - 2s 161us/sample - loss: 0.0604 - 
+            accuracy: 0.9861
+            [[0. 0. 0. 0. 0. 0. 0. 0. 1. 0.]]
+            The number is =  8
+         ]]>
+        </screen>
+        <para>
+            Itt még megjegyezném, hogy a program a cpu-t használja a számításhoz, ami egy kicsit megterhelő volt a saját processzoromnak 
+            ezáltal a számítás is lassú volt. Viszont aránylag pontosan megtudta állapítani, hogy melyik szám is volt látható az adott képen. 
+        </para>
+    </section>        
+<!--
+    <section>
+        <title>Deep dream</title>
+        <para>
+            Keras            
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>
+    </section>        
+-->                  
+    <section>
+        <title>Minecraft-MALMÖ</title>
+        <para>
+        </para>
+        <para>
+            Megoldás videó: <link xlink:href="https://youtu.be/bAPSu3Rndi8">https://youtu.be/bAPSu3Rndi8</link>      
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            A Project Malmo az első és egyetlen olyan mod a Minecrafthoz amit a Microsoft adott ki. A lényege hogy a mesterséges intelligencia 
+            kutatás iránt felkeltsék a fiatalabb generáció érdeklődését is azáltal, hogy átültetik ezt a minecraft világába, ahol már már 
+            játékosan lehet fejleszteni egy egy intelligen ágenst. 
+        </para>
+        <para>
+            Sajnos dokumentációkból minimális van. Tutoriál videók meg írások pedig lényegében nem is léteznek. Ezért elég nehéz elkezdeni 
+            háttérismeretek nélkül, de ez betudható annak is, hogy még korai szakaszában van a kezdeményezés. Egyébként annak ellenére, hogy a 
+            Minecraft java alapú, a Malmo támogat más programozási nyelveket is, úgyis mint python, c++, c#. Mi elsősorban a pythont használtunk, 
+            de volt lehetőségünk a c++ba is belekostolni. 
+        </para>
+        <para>
+            Mi ugye a félév alatt aránylag sokat foglalkoztunk ezzel a platformmal és a kezdeti nehézségek legyűrése után azt lehet mondani, 
+            hogy igen érdekes felület, mely sok lehetőséget rejt még magában a jövőre nézve. Azon se lepődnék meg, ha a közeljövő egy kiemelkedő 
+            kutatásának a Malmo lenne az alapja. 
+        </para>
+        <para>
+            Megint csak fontosnak tartom megjegyezni, hogy ami még nehézséget nyújtott az a két féle mozgásrendszer: az abszolút és a 
+            diszkrét.
+        </para>
+        <para>
+            Az abszolút lényegében úgy működik mintha a program által szimulálnánk az adott billenytű lenyomásokat adott ideig. Ezzel az a 
+            fő probléma hogy ezáltal az irányítás meglehetősen pontatlan. Nehéz példáúl pontosan 90 fokot fordulni, szinte lehetetlen. 
+        </para>
+        <para>
+            A diszkrét ezzel ellentétben pedig inkább egy gridbase movementre (rács alapú mozgás, lsd. pl.: sakk, vagy a legtöbb táblás 
+            társasjáték) hajaz. Itt van lehetőségünk a pontos mozgásra, melyet a minecraft blokk alapú világa tesz lehetővé. Viszont ami nehézséget 
+            okoz ebben a módban, hogy Steve (a játékos) fejét csak 45 fokonként lehet forgatni, ezért nincs lehetőségünk arra, hogy mondjuk 
+            csak 20 fokkal nézzünk balra.   
+        </para>
+    </section>        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+</chapter>                

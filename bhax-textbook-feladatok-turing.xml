@@ -89,43 +89,49 @@ main ()
 }
 ]]>
         </programlisting>                   
-        <screen><![CDATA[$ gcc -S -o infty-f.S infty-f.c 
-$ gcc -S -o infty-w.S infty-w.c 
-$ diff infty-w.S infty-f.S 
-1c1
-< 	.file	"infty-w.c"
----
-> 	.file	"infty-f.c"
-]]></screen>  
+        <screen><![CDATA[$ 
+            gcc -S -o infty-f.S infty-f.c 
+            $ gcc -S -o infty-w.S infty-w.c 
+            $ diff infty-w.S infty-f.S 
+            1c1
+            < 	.file	"infty-w.c"
+            ---
+            > 	.file	"infty-f.c"
+        ]]>
+        </screen>  
         <para>
             Egy mag 0 százalékban:               
         </para>        
-        <programlisting language="c"><![CDATA[#include <unistd.h>
-int
-main ()
-{
-  for (;;)
-    sleep(1);
-    
-  return 0;
-}
-]]>
+        <programlisting language="c">
+            <![CDATA[
+            #include <unistd.h>
+            int
+            main ()
+            {
+            for (;;)
+                sleep(1);
+                
+            return 0;
+            }
+            ]]>
         </programlisting>        
         <para>
             Minden mag 100 százalékban:               
         </para>
 
-        <programlisting language="c"><![CDATA[#include <omp.h>
-int
-main ()
-{
-#pragma omp parallel
-{
-  for (;;);
-}
-  return 0;
-}
-]]>
+        <programlisting language="c">
+            <![CDATA[
+            #include <omp.h>
+            int
+            main ()
+            {
+            #pragma omp parallel
+            {
+            for (;;);
+            }
+            return 0;
+            }
+            ]]>
         </programlisting>        
         <para>
             A <command>gcc infty-f.c -o infty-f -fopenmp</command> parancssorral készítve a futtathatót, majd futtatva,               
@@ -1263,6 +1269,28 @@ plot(x,y,type="b")]]>
     </section>
     <section>
         <title>Malmo - Csiga</title>
+        <para>
+            Ez volt az első önálló feladatunk a Minecraft Malmo platformon. Ezen még nagy érződnek a kezdetleges szárnypróbálgatások. 
+            Új volt mind a malmo, mind a python mindkettőnknek (Tutor Tünde), de mondhatom, hogy hamar megszerettük mindkettőt. 
+            Ebben a feladatban Stevenek még nagyon egyszerű dolga van: Csiga mozgásban kell feljebb és feljebb jutnia a RedFlowerHell arénában 
+            miközben fentről vészesen közeledik a láva.  
+        </para>
+        <para>
+            Többféle képpen is próbáltuk megközelíteni a problémát, az alap koncepciónk az az volt, hogy egy dupla for ciklus 
+            segítségével döntse el, hogy mikor mennyit menjen és hogy mikor forduljon. Ezt végül is elvetettük, mert nem volt túl átgondolt 
+            és inkább újragondoltuk. Nyílván ezek a megoldások röhejesnek tűnhetnek, de még az alap szintaktikáját tanultuk a nyelvnek 
+            és a környezetnek. 
+        </para>
+        <para>
+            Nyílván a második nekifutás se tökéletes, sok sebből vérzik és visszanézve már azt mondhatjuk, hogy nagyon kezdetleges a 
+            mostani kódjainkhoz (hálisten, hiszen ezek szerint tanultunk belőle). Itt az alap koncepció az volt, hogy Steve meghatározott ideig megy előre 
+            ezáltal előbb vagy utóbb elérve a szakasz végét. Akkor fordul egyet és növeli a <varname>tmp</varname> nevű változót. Ha ez a 
+            <varname>tmp</varname> eléri a 4-et az azt jelenti, hogy Steve körbeért, tehát mehet egyel feljebb.  
+        </para>
+        <para>
+            Kőkorszaki megoldás, de ismerkedésnek jó volt. 
+        </para>
+        <para>Python: </para>
         <programlisting language="python">
             <![CDATA[ from __future__ import print_function
             # ------------------------------------------------------------------------------------------------
