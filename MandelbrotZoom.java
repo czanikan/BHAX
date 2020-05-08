@@ -107,28 +107,6 @@ public class MandelbrotZoom extends java.awt.Frame implements Runnable {
 
 				repaint();
             }
-
-            /*@Override
-            public void mouseDragged(java.awt.event.MouseEvent me) {
-                int mx = getX() - x;
-				int my = mx;
-
-				double dx = (MandelbrotZoom.this.b - MandelbrotZoom.this.a)/ MandelbrotZoom.this.szélesség;
-    			double dy = (MandelbrotZoom.this.d - MandelbrotZoom.this.c)/ MandelbrotZoom.this.magasság;
-
-				double a = MandelbrotZoom.this.a+x*dx;
-				double b = MandelbrotZoom.this.a+x*dx+mx*dx;
-				double c = MandelbrotZoom.this.d-y*dy-my*dy;
-				double d = MandelbrotZoom.this.d-y*dy;
-
-				MandelbrotZoom.this.a = a; 
-				MandelbrotZoom.this.b = b; 
-				MandelbrotZoom.this.c = c; 
-				MandelbrotZoom.this.d = d; 
-
-				new Thread(MandelbrotZoom.this).start();
-				repaint();
-            }*/
         });
 
         setTitle("A Mandelbrot halmaz");
