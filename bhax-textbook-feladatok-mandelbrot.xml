@@ -7,6 +7,12 @@
     </info>
     <section xml:id="bhax-textbook-feladatok-mandelbrot.Mandelbrot">
         <title>A Mandelbrot halmaz</title>
+        <note>
+            <title>Tutorom volt:</title>
+            <para>
+                Tutor Tunde
+            </para>          
+        </note>
         <para>
             Írj olyan C programot, amely kiszámolja a Mandelbrot halmazt!     
         </para>

@@ -5,16 +5,17 @@
             <keyword/>
         </keywordset>
     </info>
-
+    <tip>
+        <title>Filmajánló</title>
+        <para>
+            West World 
+            <link xlink:href="https://www.imdb.com/title/tt0475784/">https://www.imdb.com/title/tt0475784/</link>
+        </para>          
+    </tip>
+    <!--
     <section>
-        <title>Szoftmax Py MNIST</title>
-        <tip>
-            <title>Filmajánló</title>
-            <para>
-                West World 
-                <link xlink:href="https://www.imdb.com/title/tt0475784/">https://www.imdb.com/title/tt0475784/</link>
-            </para>          
-        </tip>
+        <title>Passz: Szoftmax Py MNIST</title>
+        
         <para>
             Python
         </para>
@@ -36,7 +37,7 @@
             Ebből tervezünk neki 60000 darabot megtanítani, majd 10000-rel megnézzük, hogy mennyire pontos. 
         </para>
     </section>        
-
+-->
 <!--
     <section>
         <title>Szoftmax R MNIST</title>
@@ -54,9 +55,9 @@
         </para>
     </section>        
 -->
-    
+<!--
     <section>
-        <title>Mély MNIST</title>
+        <title>Passz: Mély MNIST</title>
         <para>
             Python            
         </para>
@@ -173,6 +174,7 @@
             ezáltal a számítás is lassú volt. Viszont aránylag pontosan megtudta állapítani, hogy melyik szám is volt látható az adott képen. 
         </para>
     </section>        
+-->
 <!--
     <section>
         <title>Deep dream</title>
