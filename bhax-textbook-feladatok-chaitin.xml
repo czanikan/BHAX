@@ -5,6 +5,10 @@
             <keyword/>
         </keywordset>
     </info>
+    <note>
+        <title>Futtatási videó: </title>
+        <para><link xlink:href="https://youtu.be/yBEQo_MVJvE">https://youtu.be/yBEQo_MVJvE</link></para>
+    </note>
     <section>
         <title>Iteratív és rekurzív faktoriális Lisp-ben</title>
         <para>
@@ -129,8 +133,9 @@
         </para>
     </section>        
 -->
+<!--
     <section>
-        <title>Gimp Scheme Script-fu: króm effekt</title>
+        <title>Passz: Gimp Scheme Script-fu: króm effekt</title>
         <para>
             Írj olyan script-fu kiterjesztést a GIMP programhoz, amely megvalósítja a króm effektet egy 
             bemenő szövegre!
@@ -145,9 +150,10 @@
             Tanulságok, tapasztalatok, magyarázat...
         </para>    
     </section>        
-
+-->
+<!--
     <section>
-        <title>Gimp Scheme Script-fu: név mandala</title>
+        <title>Passz: Gimp Scheme Script-fu: név mandala</title>
         <para>
             Írj olyan script-fu kiterjesztést a GIMP programhoz, amely név-mandalát készít a
             bemenő szövegből!               
@@ -162,7 +168,7 @@
             Tanulságok, tapasztalatok, magyarázat...
         </para>            
     </section>        
-
+-->
 <!--    
     <section>
         <title>Lambda</title>

@@ -20,61 +20,143 @@
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat... térj ki arra is, hogy a JDK forrásaiban a Sun programozói
-            pont úgy csinálták meg ahogyan te is, azaz az OO nemhogy nem nehéz, hanem éppen természetes neked!
+            Előre leszögezném, hogy megcsinálhattam volna a c++ verziót három fájlba is (polarGen.h, polarGen.cpp, main.cpp), de egy ilyen rövid program esetén ez kicsit overkill lett volna szerintem. 
+            Szóval az egy fájlos osztályon belüli deklarálásokat választottam inkább. 
         </para>   
         <note>
 			<title>Átvett kódcsipet</title>
 			<para>
-				A következő kódcsipetet Bátfai Norbert keze munkáját dícséri!
+				A következő kódcsipetet Bátfai Norbert munkája.
 			</para>
-        </note>   
+        </note>
+        <para>
+            Java verzió: 
+        </para>
         <programlisting language="java">
             <![CDATA[ 
-            public class PolarGenerator {
-                boolean nincsTarolt = true;
-                double tarolt;
-                public PolarGenerator() {
-            
-                    nincsTarolt = true;
-            
-                }
-                public double kovetkezo() {
-                    if(nincsTarolt) {
-                        double u1, u2, v1, v2, w;
-                        do {
-                            u1 = Math.random();
-                            u2 = Math.random();
-            
-                            v1 = 2*u1 - 1;
-                            v2 = 2*u2 - 1;
-            
-                            w = v1*v1 + v2*v2;
-            
-                        } while(w > 1);
-            
-                        double r = Math.sqrt((-2*Math.log(w))/w);
-            
-                        tarolt = r*v2;
-                        nincsTarolt = !nincsTarolt;
-            
-                        return r*v1;
-            
-                    } else {
-                        nincsTarolt = !nincsTarolt;
-                        return tarolt;
-                    }
-                }
-            
-                public static void main(String[] args) {
-                    PolarGenerator g = new PolarGenerator();
-                    for(int i=0; i<10; ++i)
-                        System.out.println(g.kovetkezo());
-                }
-            }]]>
+public class PolarGenerator {
+    boolean nincsTarolt = true;
+    double tarolt;
+    public PolarGenerator() {
+
+        nincsTarolt = true;
+
+    }
+    public double kovetkezo() {
+        if(nincsTarolt) {
+            double u1, u2, v1, v2, w;
+            do {
+                u1 = Math.random();
+                u2 = Math.random();
+
+                v1 = 2*u1 - 1;
+                v2 = 2*u2 - 1;
+
+                w = v1*v1 + v2*v2;
+
+            } while(w > 1);
+
+            double r = Math.sqrt((-2*Math.log(w))/w);
+
+            tarolt = r*v2;
+            nincsTarolt = !nincsTarolt;
+
+            return r*v1;
+
+        } else {
+            nincsTarolt = !nincsTarolt;
+            return tarolt;
+        }
+    }
+
+    public static void main(String[] args) {
+        PolarGenerator g = new PolarGenerator();
+        for(int i=0; i<10; ++i)
+            System.out.println(g.kovetkezo());
+    }
+}]]>
         </programlisting>
         <para>
-            A polártranszformációs algoritmus véletlen szám generálásra alkalmazható. Próbáljuk is ki: 
+            Ez pedig a C++ verzió, ami már önálló munkám az előző alapján: 
+        </para>
+        <programlisting language="c++">
+            <![CDATA[ 
+#include <iostream>
+    #include <math.h>
+    #include <stdlib.h>
+    #include <time.h>
+    
+    using namespace std;
+    
+    class PolarGenerator 
+    {
+        public: 
+            bool nincsTarolt = true;
+            double tarolt;
+            
+            PolarGenerator()
+            {
+                nincsTarolt = true;
+                srand (time(NULL));
+            }
+    
+        double kovetkezo()
+        {
+            if (nincsTarolt)
+            {
+                double u1, u2, v1, v2, w;
+                do 
+                {
+                    u1 = ((double) rand() / (RAND_MAX));
+                    u2 = ((double) rand() / (RAND_MAX));
+                    
+                    v1 = 2 * u1 - 1;
+                    v2 = 2 * u2 - 1;
+                    
+                    w = v1 * v1 + v2 * v2;
+    
+                } while (w > 1);
+    
+                double r = sqrt ((-2 * log (w)) / w);
+    
+                tarolt = r * v2;
+                nincsTarolt = !nincsTarolt;
+    
+                return r * v1;
+            }
+            else 
+            {
+                nincsTarolt = !nincsTarolt;
+                return tarolt;
+            }
+        }
+    };
+    
+    int main(int argc, const char **argv)
+    {
+        PolarGenerator g;
+        for (int i = 0; i < 10; ++i)
+        {
+            cout << g.kovetkezo() << endl;
+        }
+        
+        return 0;
+    }
+    
+
+            ]]>
+        </programlisting>
+        <para>
+            A polártranszformációs algoritmus véletlen szám generálásra alkalmazható. Ha megnézzük a két programot akkor láthatjuk, hogy elég hasonlók. Igazából csak a nyelvi sajátosságokban 
+            különböznek. Az egyik fő különbség, hogy míg Javaban egy könyvtárat se hívtunk meg, addig a C++-hoz kapásból 4-et (egyet a kimenetre íráshoz, kettőt a random szám generáláshoz és 
+            mégegyet a matematikai függvények használatához). Őszintén nem vagyok egy nagy Java-s, nem nagyon próbálgattam korábban, mert nem éreztem szükségét OO környezetnek, kivéve unity-ben, 
+            ott viszont C#-ban dolgoztam. Viszont a most szerzet tapasztalataim alapján azt mondhatom, hogy OO programozáshoz sokkal jobban tetszik a Java mint a C++. Persze ez ízlés kérdés elsősorban. 
+            Ami a legjobban tetszik, hogy letisztultabb, egyszerűbb, igaz nem kis programokhoz való, mert ott elég overkill. Dolgokat egyszerűbben tudok megvalósítani (elég a random szám generálásra gondolni
+            : Math.random() <type>VS</type>  srand (time(NULL)) + ((double) rand() / (RAND_MAX))). Viszont C++-ban jóval több rutinom van, ezért alapvetőleg egyszerűbb azzal dolgoznom, mert nem kell 
+            minden lépésem előtt google-zni. De mindenképp szeretném jobban megismerni ezt a nyelvet is (meg a python-t is).
+        </para>
+        <para>
+            Próbáljuk is ki: 
         </para>
         <screen>
             <![CDATA[ 
@@ -107,19 +189,30 @@
         <para>
             Megoldás forrása:                
         </para>
-        <note>
-			<title>Átvett kódcsipet</title>
-			<para>
-				A következő kódcsipetet Bátfai Norbert keze munkáját dícséri!
-			</para>
-        </note>
         <para>
             Ezt a programot from skrech módon, a koronavírus miatti távoktatás során írtuk, Bátfai Norbert 
             stream-jei alapján. 
         </para>   
         <para>
-            A bineáris fa építése a következő algoritmus alapján zajlik: 
+            Mik azok a bináris fák? Röviden a bineáris fák adatstruktúrák, mely nevüket onnan kapták, hogy a az adatokat ágak szerűen 
+            tárolja. Nyílván ehhez vizualizálni kell először. Speciális változatai még például az AVL-fák vagy a piros-fekete fák. 
+            Alapvetőleg 3 fő elemtípusból állnak. Az első a gyökér, mely a fát alapját képezi. A gyökérnek (mint minden csomópontnak) 
+            legfeljebb két gyermeke lehet (ezért is bináris), ezeket csomópontoknak hívjuk. Ha egy csomópontnak nincs gyermeke, akkor 
+            azt levélelemnek nevezzük. Ezen kívül a fánknak vannak tulajdonságai is, mint a mélysége (kb annyit tesz hogy milyen hosszú a 
+            leghosszabb ág), vagy a kiegyensúlyozotság. 
+        </para>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/binary-tree.png" scale="70" />
+            </imageobject>
+            <textobject>
+                <phrase>Bináris fa</phrase>
+            </textobject>
+        </mediaobject>
+        <para>
+            Az LZW fa építése a következő algoritmus alapján zajlik: 
 
+            Először is elkészítjük a gyökért, majd elkezdjük beolvasni a kapott bemenetet (bitmintaS)
             Amennyiben 0-ás elemet kapunk, meg kell vizsgálnunk, hogy az aktuális csomópontunknak van-e nullás gyermeke. 
             Azesetben, ha még nincs akkor létrehozunk egyet, majd visszalépünk a gyökérre. Viszont ha van akkor arra lépünk rá 
             és olvassuk tovább a bemenetet. Hasonló képpen járunk el 1-es bemenet esetén is, csak ott értelemszerűen az 
@@ -142,6 +235,239 @@
             ------------1 4 0 
             ]]>
         </screen>
+        <para>
+            A fa építését az <function>ZLW</function> végzi az alábbi módon (aminek az alapját korábban már tárgyaltuk):
+            Megvizsgáljuk, hogy a kapott érték 0 e és ha igen, akkor megvizsgáljuk, hogy az aktuális elemnek van-e bal gyermeke. Ha 
+            nincs akkor foglalunk a csomópontunkank helyet a tárban, majd a mutatót visszaállítjuk a gyökérre. Abban az esetben ha már 
+            volt bal oldali gyermeke a csomópontnak akkor egyszerűen csak ráállítjuk a mutató arra az elemre és várjuk a következő értéket. 
+            Viszont amennyiben a kapott ellem nem nulla, hanem kizárásos alapon egy, akkor hasonlóan járunk el, csak a jobb gyermekkel. Megint 
+            csak ellenőrizzük, hogy van e már jobboldali gyermek és ha nincs akkor létrehozzuk, majd visszaállítjuk a mutatót. Amennyiben meg volt, 
+            akkor ugye csak rálépünk. 
+        </para>
+        <programlisting language = "c++">
+<![CDATA[ 
+template <typename ValueType, ValueType vr, ValueType v0>
+ZLWTree<ValueType, vr, v0> & ZLWTree<ValueType, vr, v0>::operator<<(ValueType value)
+{
+    if (value == v0)
+    {
+        if (!this -> treep -> leftChild())
+        {
+            typename BinTree<ValueType>::Node * node = new typename BinTree<ValueType>::Node(value);
+            this -> treep -> leftChild(node);
+            this -> treep = this -> root;
+        } 
+        else 
+        {
+            this -> treep = this -> treep -> leftChild();
+        }
+    } 
+    else
+    {
+        if (!this -> treep -> rightChild())
+        {
+            typename BinTree<ValueType>::Node * node = new typename BinTree<ValueType>::Node(value);
+            this -> treep -> rightChild(node);
+            this -> treep = this -> root;
+        } 
+        else 
+        {
+            this -> treep = this -> treep -> rightChild();
+        }
+    }
+
+]]>
+        </programlisting>
+        <para>
+            És végül a teljes kód maga:
+        </para>
+        <programlisting language="c++">
+<![CDATA[ 
+#include <iostream>
+
+template <typename ValueType>
+class BinTree{
+
+protected:
+
+    class Node{ 
+
+    private:
+        ValueType value;
+        Node *left;
+        Node *right;
+        int count{0};
+
+        Node(const Node &);
+        Node & operator=(const Node &); // másoló konstruktor és értékadás-
+        Node(const Node &&);
+        Node & operator=(const Node &&);
+
+    public: 
+        Node(ValueType value): value(value), left(nullptr), right(nullptr) {}
+        ValueType getValue(){return value;}
+        Node * leftChild(){return left;}
+        Node * rightChild(){return right;}
+        void leftChild(Node * node){left = node;}
+        void rightChild(Node * node){right = node;}
+        int getCount(){return count;}
+        void incCount(){++count;}
+    };
+
+    Node *root; //gyökér
+    Node *treep; //fán belüli fa mutató
+    int depth{0};
+
+private: 
+    
+
+    BinTree(const BinTree &);
+    BinTree & operator=(const BinTree &); 
+    BinTree(const BinTree &&);
+    BinTree & operator=(const BinTree &&);
+    
+public:
+    BinTree(Node *root = nullptr, Node *treep = nullptr): root(root), treep(treep) {}
+    ~BinTree()
+    {
+        deltree(root);
+    }
+    BinTree & operator<<(ValueType value);
+    void print(){print(root, std::cout);}
+    void print(Node *node, std::ostream & os);
+    void deltree(Node *node);
+
+};
+
+template <typename ValueType, ValueType vr, ValueType v0>
+class ZLWTree : public BinTree<ValueType> {
+
+public:
+    ZLWTree(): BinTree<ValueType>(new typename BinTree<ValueType>:: Node(vr)) {
+        this->treep = this->root;
+    }
+    ZLWTree & operator<<(ValueType value);
+
+};
+
+template <typename ValueType>
+BinTree<ValueType> & BinTree<ValueType>::operator<<(ValueType value)
+{
+    if(!treep) {
+        root = treep = new Node(value);
+    } else if (treep -> getValue() == value){
+        treep -> incCount();
+    } else if(treep -> getValue() > value)
+    {
+        if(!treep -> leftChild())
+        {
+            treep -> leftChild(new Node(value));
+        }else
+        {
+            treep = treep -> leftChild();
+            *this << value; 
+        }
+    } else if(treep -> getValue() < value)
+    {
+        if(!treep -> rightChild())
+        {
+            treep -> rightChild(new Node(value));
+        }else
+        {
+            treep = treep -> rightChild();
+            *this << value; 
+        }
+    }
+
+    treep = root;
+
+    return *this;
+}
+template <typename ValueType, ValueType vr, ValueType v0>
+ZLWTree<ValueType, vr, v0> & ZLWTree<ValueType, vr, v0>::operator<<(ValueType value)
+{
+    if (value == v0)
+    {
+        if (!this -> treep -> leftChild())
+        {
+            typename BinTree<ValueType>::Node * node = new typename BinTree<ValueType>::Node(value);
+            this -> treep -> leftChild(node);
+            this -> treep = this -> root;
+        } 
+        else 
+        {
+            this -> treep = this -> treep -> leftChild();
+        }
+    } 
+    else
+    {
+        if (!this -> treep -> rightChild())
+        {
+            typename BinTree<ValueType>::Node * node = new typename BinTree<ValueType>::Node(value);
+            this -> treep -> rightChild(node);
+            this -> treep = this -> root;
+        } 
+        else 
+        {
+            this -> treep = this -> treep -> rightChild();
+        }
+    }
+    
+
+    return *this;
+}
+template <typename ValueType>
+void BinTree<ValueType>::print(Node *node, std::ostream & os)
+{
+    if(node)
+    {
+        ++depth;
+        print(node -> leftChild(), os);
+
+        for(int i = 0; i < depth; ++i)
+        {
+            os << "---";
+        }
+        
+        os << node -> getValue() << ' ' << depth << ' ' << node -> getCount() << ' ' << std::endl;
+
+        print(node -> rightChild(), os);
+        --depth;
+    }
+}
+
+template <typename ValueType>
+void BinTree<ValueType>::deltree(Node *node)
+{
+    if(node)
+    {
+        deltree(node -> leftChild());
+        deltree(node -> rightChild());
+
+        delete node;
+    }
+}
+
+int main(int  argc, char** argv, char ** env)
+{
+    BinTree<int> bt;
+
+    bt << 8 << 9 << 5 << 2 << 7;
+
+    bt.print();
+
+    std::cout << std::endl;
+
+    ZLWTree<char, '/', '0'> zt;
+
+    zt << '0' << '1' << '1' << '1' << '1' << '0' << '0' << '1' << '0' << '0' << '1' << '0' << '0' << '1' << 
+        '0' << '0' << '0' << '1' << '1' << '1';
+
+    zt.print();
+}
+    
+]]>
+        </programlisting>
     </section>        
         
     <section>
@@ -214,9 +540,9 @@
             ]]>
         </screen>
     </section>        
-                        
+<!--
     <section>
-        <title>Tag a gyökér</title>
+        <title>Passz: Tag a gyökér</title>
         <para>
             Az LZW algoritmust ültesd át egy C++ osztályba, legyen egy Tree és egy beágyazott Node
             osztálya. A gyökér csomópont legyen kompozícióban a fával!
@@ -232,9 +558,10 @@
             eleve úgy lett megírva, hogy a gyökér kompozícióban van a fával.
         </para>
     </section>        
-                
+-->
+<!--
     <section>
-        <title>Mutató a gyökér</title>
+        <title>Passz: Mutató a gyökér</title>
         <para>
             Írd át az előző forrást, hogy a gyökér csomópont ne kompozícióban, csak aggregációban legyen a 
             fával!
@@ -255,7 +582,7 @@
             hivatkoztunk (ez csak annyit tesz, hogy kiszedjük előle a címképző operátort).
         </para>
     </section>                     
-
+-->
     <section>
         <title>Mozgató szemantika</title>
         <para>
@@ -273,64 +600,172 @@
             a továbbfejlesztéséről van szó Bátfai Norbert vezénylése alatt. 
         </para>
         <para>
-            Az LZWTree osztályunk úgy épül fel, hogy az <code>LZWTree</code>
-            osztályon belül megtalálhatóak beágyazott <code>Csomopont</code>
-            osztályú objektumok, ezek alkotják a fát.
-            Ebből következik, hogy a fát úgy tudjuk másolni, hogy
-            ezeket a beágyazott csomópontokat másoljuk, rekurzívan.
+            Az LZWTree osztályunk úgy épül fel, hogy az <code>LZWTree</code> osztályon belül megtalálhatóak beágyazott <code>Node</code>
+            osztályú objektumok, ezek alkotják a fát. Ebből következik, hogy a fát úgy tudjuk másolni, hogy
+            ezeket a beágyazott csomópontokat rekurzívan másoljuk. Ebben az esetben érvényesül az úgynevezett "Rule of Five", azaz 
+            az ötök szabálya, mely jelen esetünkben csak annit tesz, hogy a 4 konstruktor és 1 destruktor közül egyiket se hozhatom létre a 
+            másik 4 nélkül. 
         </para>
         <programlisting language="C++">
-            <![CDATA[ BinTree(const BinTree & old)
-        {
-            std::cout << "BT copy ctor" << std::endl;
+            <![CDATA[ 
+BinTree(const BinTree & old)
+{
+    std::cout << "BT copy ctor" << std::endl;
 
-            root = cp(old .root, old.treep);
-        }
+    root = cp(old .root, old.treep);
+}
 
-        Node * cp(Node *node, Node *treep)
-        {
-            Node * newNode = nullptr;
+Node * cp(Node *node, Node *treep)
+{
+    Node * newNode = nullptr;
 
-            if(node)
-            {
-                newNode = new Node(node -> getValue());
-                
-                newNode -> leftChild(cp(node -> leftChild(), treep));
-                newNode -> rightChild(cp(node -> rightChild(), treep));
-
-                if (node == treep)
-                {
-                    this -> treep = newNode;
-                }
-            }
-
-            return newNode;
-        }
-
-        BinTree & operator=(const BinTree & old)
-        {
-            std::cout << "BT copy assign" << std::endl;
-
-            BinTree tmp{old};
-            std::swap(*this, tmp);
-            return *this;
-        } 
-        BinTree(BinTree && old)
-        {
-            std::cout << "BT move ctor" << std::endl;
-
-            root = nullptr;
-            *this = std::move(old);
-        }
-        BinTree & operator=(BinTree && old)
-        {
-            std::cout << "BT move assign" << std::endl;
+    if(node)
+    {
+        newNode = new Node(node -> getValue());
         
-            std::swap(old.root, root);
-            std::swap(old.treep, treep);
+        newNode -> leftChild(cp(node -> leftChild(), treep));
+        newNode -> rightChild(cp(node -> rightChild(), treep));
 
-            return *this;
-    }]]>
+        if (node == treep)
+        {
+            this -> treep = newNode;
+        }
+    }
+
+    return newNode;
+}
+
+BinTree & operator=(const BinTree & old)
+{
+    std::cout << "BT copy assign" << std::endl;
+
+    BinTree tmp{old};
+    std::swap(*this, tmp);
+    return *this;
+} 
+BinTree(BinTree && old)
+{
+    std::cout << "BT move ctor" << std::endl;
+
+    root = nullptr;
+    *this = std::move(old);
+}
+BinTree & operator=(BinTree && old)
+{
+    std::cout << "BT move assign" << std::endl;
+
+    std::swap(old.root, root);
+    std::swap(old.treep, treep);
+
+    return *this;
+}
+
+~BinTree()
+{
+    std::cout << "BT dtor" << std::endl;
+    deltree(root);
+}
+]]>
+        </programlisting>
+        <para>
+            Ismerjük meg a szuper ötöst egyesével. Az első legyen a fekete bárány, a destruktor, mely feladata csak a tárban foglalt 
+            fa objektum felszabadítása a gyökértől kezdva. 
+        </para>
+        <programlisting language="c++">
+<![CDATA[ 
+~BinTree()
+{
+    std::cout << "BT dtor" << std::endl;
+    deltree(root);
+}
+]]>
+        </programlisting>
+        <para>
+            A következő legyen a mozgató-értékadás. Ehhez szükségünk lesz a tárban két lefoglalt fára, mivel ez a konstruktor ezeket akarja 
+            majd megcserélni. Ez sokkal egyszerűbb mint ahogy hangzik, mert csak fognunk kell kétszer a <function>swap</function> függvényt, 
+            az egyikkel a gyökerüket, a másikkal a mutatóit megcseréljük. 
+        </para>
+        <programlisting language="c++">
+<![CDATA[ 
+BinTree & operator=(BinTree && old)
+{
+    std::cout << "BT move assign" << std::endl;
+
+    std::swap(old.root, root);
+    std::swap(old.treep, treep);
+
+    return *this;
+}
+]]>
+        </programlisting>
+        <para>
+            Ezután jöhet a mozgató konstruktor. Ekkor egy meglévő fát akarunk áthelyezni és ezért egy új fának foglalunk helyet a tárban. 
+            Az új fa gyökerét <type>nullptr</type>-re állítjuk, majd az eredeti fa gyökerével, végül az eredeti fát töröljük. 
+        </para>
+        <programlisting language="c++">
+            <![CDATA[ 
+BinTree(BinTree && old)
+{
+    std::cout << "BT move ctor" << std::endl;
+
+    root = nullptr;
+    *this = std::move(old);
+}
+            ]]>
+        </programlisting>
+        <para>
+            A másoló konstruktor már kicsit összetettebb. Itt a cél hogy egy már meglévő fát szeretnénk a tárban máshova helyezni. 
+            Ehhez szükségünk lesz egy az eredeti fával megegyező fastruktúrára. Ezután használjuk a <function>cp</function> függvényt, 
+            amivel lemásoljuk az eredeti fa mutatóját és gyökerét. Ez a függvény úgy építi fel a fát, ahogy az eredeti volt, ami nagyon 
+            fontos.
+        </para>
+        <programlisting language="c++">
+                <![CDATA[ 
+BinTree(const BinTree & old)
+{
+    std::cout << "BT copy ctor" << std::endl;
+
+    root = cp(old .root, old.treep);
+}
+
+Node * cp(Node *node, Node *treep)
+{
+    Node * newNode = nullptr;
+
+    if(node)
+    {
+        newNode = new Node(node -> getValue());
+        
+        newNode -> leftChild(cp(node -> leftChild(), treep));
+        newNode -> rightChild(cp(node -> rightChild(), treep));
+
+        if (node == treep)
+        {
+            this -> treep = newNode;
+        }
+    }
+
+    return newNode;
+}
+                ]]>
+        </programlisting>
+        <para>
+            Végül pedid a másoló értékadás. Ennél a konstruktornál pedig egy már létező fát szeretnénk belemásolni egy másikba. Ehhez először 
+            létrehozunk egy átmeneti <varname>tmp</varname> fát, melybe az eredeti fa másolata kerül. Ezt követően megint a <function>swap</function> 
+            függvényt alkalmazzuk, hogy megcseréljük az <varname>tmp</varname> fát az aktuálissal, majd az eredeti fát átadjuk a destruktornak 
+            megsemmísités céljából. 
+        </para>
+        <programlisting language="c++">
+                <![CDATA[ 
+BinTree & operator=(const BinTree & old)
+{
+    std::cout << "BT copy assign" << std::endl;
+
+    BinTree tmp{old};
+    std::swap(*this, tmp);
+    return *this;
+} 
+                ]]>
         </programlisting>
     </section>      
     <section>
@@ -338,6 +773,251 @@
         <para> 
             <link xlink:href="https://youtu.be/aoyZWakqNGY">https://youtu.be/aoyZWakqNGY</link>
         </para>
+        <para>
+            Ebben a feladatban Steve érzékelését kellett kibővíteni 3x3x3-asról 5x5x5-re. Ehhez először is az xml-t kellett átírnunk. Majd megírni újra 
+            a komplett érzékelését, mivel így mindegyik cella máshova került, mint eredetileg volt.
+        </para>
+        <programlisting language = "python">
+<![CDATA[ 
+from __future__ import print_function
+# ------------------------------------------------------------------------------------------------
+# Copyright (c) 2016 Microsoft Corporation
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+# NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------------------------
+
+# Tutorial sample #2: Run simple mission using raw XML
+
+# Added modifications by Norbert Bátfai (nb4tf4i) batfai.norbert@inf.unideb.hu, mine.ly/nb4tf4i.1
+# 2018.10.18, https://bhaxor.blog.hu/2018/10/18/malmo_minecraft
+# 2020.02.02, NB4tf4i's Red Flowers, http://smartcity.inf.unideb.hu/~norbi/NB4tf4iRedFlowerHell
+
+
+from builtins import range
+import MalmoPython
+import os
+import sys
+import time
+import random
+import json
+import math
+
+if sys.version_info[0] == 2:
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+else:
+    import functools
+    print = functools.partial(print, flush=True)
+
+# Create default Malmo objects:
+
+agent_host = MalmoPython.AgentHost()
+try:
+    agent_host.parse( sys.argv )
+except RuntimeError as e:
+    print('ERROR:',e)
+    print(agent_host.getUsage())
+    exit(1)
+if agent_host.receivedArgument("help"):
+    print(agent_host.getUsage())
+    exit(0)
+
+# -- set up the mission -- #
+missionXML_file='nb4tf4i_d.xml'
+with open(missionXML_file, 'r') as f:
+    print("NB4tf4i's Red Flowers (Red Flower Hell) - DEAC-Hackers Battle Royale Arena\n")
+    print("NB4tf4i vörös pipacsai (Vörös Pipacs Pokol) - DEAC-Hackers Battle Royale Arena\n\n")
+    print("The aim of this first challenge, called nb4tf4i's red flowers, is to collect as many red flowers as possible before the lava flows down the hillside.\n")
+    print("Ennek az első, az nb4tf4i vörös virágai nevű kihívásnak a célja összegyűjteni annyi piros virágot, amennyit csak lehet, mielőtt a láva lefolyik a hegyoldalon.\n")    
+    print("Norbert Bátfai, batfai.norbert@inf.unideb.hu, https://arato.inf.unideb.hu/batfai.norbert/\n\n")    
+    print("Loading mission from %s" % missionXML_file)
+    mission_xml = f.read()
+    my_mission = MalmoPython.MissionSpec(mission_xml, True)
+    my_mission.drawBlock( 0, 0, 0, "lava")
+
+
+class Hourglass:
+    def __init__(self, charSet):
+        self.charSet = charSet
+        self.index = 0
+    def cursor(self):
+        self.index=(self.index+1)%len(self.charSet)
+        return self.charSet[self.index]
+
+hg = Hourglass('|/-\|')
+
+class Steve:
+    def __init__(self, agent_host):
+        self.agent_host = agent_host
+        self.x = 0
+        self.y = 0
+        self.z = 0        
+        self.yaw = 0
+        self.pitch = 0
+        self.lookingat = 0     
+        
+    def run(self):
+        world_state = self.agent_host.getWorldState()
+        # Loop until mission ends:
+        j = 1
+        i = 3
+        
+        move = 13
+            
+        self.agent_host.sendCommand( "turn -1" )
+        time.sleep(1)
+        for i in range(4):
+            self.agent_host.sendCommand( "move 1" )
+            time.sleep(0.1)
+        self.agent_host.sendCommand( "look 1" )
+        self.agent_host.sendCommand( "move 0" )
+        time.sleep(.5)
+        self.agent_host.sendCommand( "attack 1" )
+        time.sleep(1)
+        self.agent_host.sendCommand( "look -1" )
+        self.agent_host.sendCommand( "move 1" )
+        time.sleep(0.1)
+        self.agent_host.sendCommand( "jumpmove 1" )
+        time.sleep(0.5)
+        self.agent_host.sendCommand( "move 1" )
+        time.sleep(0.1)
+
+        while world_state.is_mission_running:
+
+            self.agent_host.sendCommand( "look .2" )
+            print("--- nb4tf4i arena -----------------------------------\n")
+
+            for i in range(4):
+                self.agent_host.sendCommand( "turn 1" )
+                time.sleep(.1)
+                for j in range(move):
+                    
+                    if world_state.number_of_observations_since_last_state != 0:
+                            
+                        sensations = world_state.observations[-1].text
+                        print("    sensations: ", sensations)                
+                        observations = json.loads(sensations)
+                        nbr5x5x5 = observations.get("nbr5x5", 0)
+                        print("    5x5x5 neighborhood of Steve: ", nbr5x5x5)
+                            
+                        if "Yaw" in observations:
+                            self.yaw = int(observations["Yaw"])
+                        if "Pitch" in observations:
+                            self.pitch = int(observations["Pitch"])
+                        if "XPos" in observations:
+                            self.x = int(observations["XPos"])
+                        if "ZPos" in observations:
+                            self.z = int(observations["ZPos"])        
+                        if "YPos" in observations:
+                            self.y = int(observations["YPos"])  
+                            
+                        print("    Steve's Coords: ", self.x, self.y, self.z)        
+                        print("    Steve's Yaw: ", self.yaw)        
+                        print("    Steve's Pitch: ", self.pitch)
+
+                        if "LineOfSight" in observations:
+                            LineOfSight = observations["LineOfSight"]
+                            self.lookingat = LineOfSight["type"]
+                        print("    Steve's <): ", self.lookingat)
+
+            
+                    
+
+                        '''if nbr3x3x3[12] == "red_flower" or nbr3x3x3[13] == "red_flower" or nbr3x3x3[14] == "red_flower":
+                            if nbr3x3x3[13] == "red_flower":
+                                self.agent_host.sendCommand( "move -1" )
+                                time.sleep(.5) #.5
+                            if nbr3x3x3[14] == "red_flower":
+                                self.agent_host.sendCommand( "move 0" )
+                                time.sleep(.5) #.5
+                            self.agent_host.sendCommand( "look 1" )
+                            self.agent_host.sendCommand( "move 0" )
+                            time.sleep(.5) #.5
+                            self.agent_host.sendCommand( "attack 1" )
+                            time.sleep(1) #1
+                            self.agent_host.sendCommand( "look -1" )
+                            self.agent_host.sendCommand( "jumpmove 1" )
+                            time.sleep(0.5)'''
+                            
+
+                    world_state = self.agent_host.getWorldState()
+                    '''
+                    if self.lookingat == "red_flower": #itt talalkozik a viraggal meg fel is veszi
+                        print("     VIRAAAG!")
+                        self.agent_host.sendCommand( "move 1" )
+                        time.sleep(.5)
+                        self.agent_host.sendCommand( "look 1" )
+                        self.agent_host.sendCommand( "move 0" )
+                        time.sleep(1.5)
+                        self.agent_host.sendCommand( "attack 1" )
+                        time.sleep(1.5)
+                        self.agent_host.sendCommand( "look -1" )
+                        self.agent_host.sendCommand( "jumpmove 1" )
+                        time.sleep(1)
+                    '''
+                    #innen kezdodik a mozgasa
+                    self.agent_host.sendCommand( "move 1" )
+                    time.sleep(0.1)
+
+                world_state = self.agent_host.getWorldState()
+
+            self.agent_host.sendCommand( "jumpmove 1" )
+            time.sleep(0.5)
+            self.agent_host.sendCommand( "move 1" )
+            time.sleep(0.1)
+            self.agent_host.sendCommand( "look -.2" )
+            move = move + 4 
+
+num_repeats = 1
+for ii in range(num_repeats):
+
+    my_mission_record = MalmoPython.MissionRecordSpec()
+
+    # Attempt to start a mission:
+    max_retries = 6
+    for retry in range(max_retries):
+        try:
+            agent_host.startMission( my_mission, my_mission_record )
+            break
+        except RuntimeError as e:
+            if retry == max_retries - 1:
+                print("Error starting mission:", e)
+                exit(1)
+            else:
+                print("Attempting to start the mission:")
+                time.sleep(2)
+
+    # Loop until mission starts:
+    print("   Waiting for the mission to start ")
+    world_state = agent_host.getWorldState()
+
+    while not world_state.has_mission_begun:
+        print("\r"+hg.cursor(), end="")
+        time.sleep(0.15)
+        world_state = agent_host.getWorldState()
+        for error in world_state.errors:
+            print("Error:",error.text)
+
+    print("NB4tf4i Red Flower Hell running\n")
+    steve = Steve(agent_host)
+    steve.run()
+
+print("Mission ended")
+# Mission has ended.
+]]>
+        </programlisting>
     </section>               
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 </chapter>                

@@ -638,7 +638,282 @@ main ( int argc, char *argv[] )
         </para>
         <para>
             Létrehoztunk egy frakablak nevű programot, mely segítségével a terminál helyet már rendesen ablakban futtathtó a programunk, 
-            melyben megjeleníthető a mandelbrot. 
+            melyben megjeleníthető a mandelbrot. A main-t nem részletezném, ott igazából csak a <varname>FrakAblak</varname> konstruktorhoz készítünk objektumot és megjelenítjük azt. 
+            A <varname>FrakAblak</varname>-ot meg a <varname>FrakAblak</varname>-at viszont kifejteném kicsit jobban. Kezdjük az előbbivel: 
+        </para>
+        <programlisting language = "c++">
+            <![CDATA[ 
+#include <iostream>
+    #include "frakablak.h"
+    
+    FrakAblak::FrakAblak(double a, double b, double c, double d,
+                            int szelesseg, int iteraciosHatar, QWidget *parent)
+                                : QMainWindow(parent)
+    {
+        setWindowTitle("Mandelbrot halmaz");
+    
+        szamitasFut = true;
+        x = y = mx = my = 0;
+        this->a = a;
+        this->b = b;
+        this->c = c;
+        this->d = d;
+        this->szelesseg = szelesseg;
+        this->iteraciosHatar = iteraciosHatar;
+        magassag = (int)(szelesseg * ((d-c)/(b-a)));
+    
+        setFixedSize(QSize(szelesseg, magassag));
+        fraktal= new QImage(szelesseg, magassag, QImage::Format_RGB32);
+    
+        mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+        mandelbrot->start();
+    }
+    
+    FrakAblak::~FrakAblak()
+    {
+        delete fraktal;
+        delete mandelbrot;
+    }
+    
+    void FrakAblak::paintEvent(QPaintEvent*) {
+        QPainter qpainter(this);
+        qpainter.drawImage(0, 0, *fraktal);
+        if(!szamitasFut) {
+            qpainter.setPen(QPen(Qt::white, 1));
+            qpainter.drawRect(x, y, mx, my);
+            if(!zX.empty()) //excuse me
+            {
+                for(int i=0; i<zX.size(); i++)
+                {
+                    qpainter.drawLine(zX[i],zY[i],zX2[i],zY2[i]);
+                }
+    
+            }
+    
+    
+        }
+        qpainter.end();
+    }
+    
+    void FrakAblak::mousePressEvent(QMouseEvent* event) {
+    
+        if(event->button() == Qt::LeftButton)
+        {
+        x = event->x();
+        y = event->y();
+        mx = 0;
+        my = 0;
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+                    double dx = (b-a)/szelesseg;
+                    double dy = (d-c)/magassag;
+                    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+    
+                    int iteracio = 0;
+    
+                    reC = a+event->x()*dx;
+                    imC = d-event->y()*dy;
+    
+                    reZ = 0;
+                    imZ = 0;
+                    iteracio = 0;
+    
+                    while(reZ*reZ + imZ*imZ < 4 && iteracio < 255) {
+                        // z_{n+1} = z_n * z_n + c
+                        ujreZ = reZ*reZ - imZ*imZ + reC;
+                        ujimZ = 2*reZ*imZ + imC;
+                        zX.push_back((int)((reZ - a)/dx));
+                        zY.push_back( (int)((d - imZ)/dy));
+                        zX2.push_back((int)((ujreZ - a)/dx));
+                        zY2.push_back((int)((d - ujimZ)/dy));
+                        reZ = ujreZ;
+                        imZ = ujimZ;
+    
+                        ++iteracio;
+        }
+        }
+        update();
+    }
+    
+    void FrakAblak::mouseMoveEvent(QMouseEvent* event) {
+    
+        // A nagyítandó kijelölt terület szélessége és magassága:
+        mx = event->x() - x;
+        my = mx; // négyzet alakú
+    
+        update();
+    }
+    
+    void FrakAblak::mouseReleaseEvent(QMouseEvent* event) {
+    
+        if(event->button() == Qt::LeftButton)
+        {
+        if(szamitasFut)
+            return;
+    
+        szamitasFut = true;
+    
+        double dx = (b-a)/szelesseg;
+        double dy = (d-c)/magassag;
+    
+        double a = this->a+x*dx;
+        double b = this->a+x*dx+mx*dx;
+        double c = this->d-y*dy-my*dy;
+        double d = this->d-y*dy;
+    
+        this->a = a;
+        this->b = b;
+        this->c = c;
+        this->d = d;
+    
+        delete mandelbrot;
+        mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+        mandelbrot->start();
+        }
+        update();
+    }
+    
+    void FrakAblak::keyPressEvent(QKeyEvent *event)
+    {
+    
+        if(szamitasFut)
+            return;
+    
+        if (event->key() == Qt::Key_N)
+            iteraciosHatar *= 2;
+        szamitasFut = true;
+    
+        delete mandelbrot;
+        mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+        mandelbrot->start();
+    
+    }
+    
+    
+    void FrakAblak::vissza(int magassag, int *sor, int meret)
+    {
+        int piros = 0;
+        int zold = 0;
+        int kek = 0;
+    
+        for(int i=0; i<meret; ++i) 
+        {
+    
+            piros = 120 - sor[i];
+            zold = 256 - sor[i];
+            kek = 170 - sor[i];
+    
+            std::cout<< piros << " " << zold << " " << kek << " " << std::endl;
+    
+            QRgb szin = qRgb(piros, zold, kek); //qRgb(135, 255-sor[i], 180);//qRgb(piros, kek, zold); //qRgb(0, 255-sor[i], 0);    qRgb(105, 255-sor[i], 180);
+            fraktal->setPixel(i, magassag, szin);
+        }
+        update();
+    }
+    
+    void FrakAblak::vissza(void)
+    {
+        szamitasFut = false;
+        x = y = mx = my = 0;
+    }
+            ]]>
+        </programlisting>
+        <para>
+            Először is van egy (osztályon kívűl deklarált) konstruktorunk, mely létrehozza az ablakot, átadja a paramétereket és végül meghívja a <function>FrakSzal</function>-t. 
+            Ezt követi a destruktor. Aztán jönnek a függvényeink. Az első a <function>paintEvent</function> amely a kirajzolásért felel, plusz a kijelöléskori vizalizálást (a kis 
+            téglalap) és az újraszámításkor a pisor vonalat ami mutatja, hogy hol tart a számítás. Utánna jön az interaktivítás támogatása, azaz a nagyítás megvalósítására. Egy kijelölt 
+            területbe akarunk belenagyítani, amit úgy érünk el, hogy újraszámoltatjuk a halmazt, viszont már csak azon a számsíkon ami a kijelölésbe beleesik. Ehhez vizsgálnunk kell az 
+            egerünk 3 állapotát. Egész pontosan azt amikor lenyomjuk a gombot, azt amikor mozgatjuk és azt amikor elengedjuk. Ehhez a három fázishoz három beépített függvényt fogunk alkalmazni. 
+            Az első a <function>mousePressEvent</function>, ami ahogy a neve is sugalja, az egér lenyomását figyeli. Itt csak bekérjük a kurzor aktuális x és y koordinátáit. Az x-et 
+            átadjuk a <function>mouseMoveEvent</function>-nek aki a lekért új x-ből, kivonja az eredetit, így meghatározva a vízszintesen megtett távolságot, majd ezt átadja az <varname>my</varname>-nak 
+            mivel négyzet alakú kijelölést szeretnénk, ezért a két oldal hossza megegyezik. Na de már van kiinduló pontunk, meg kijelölés kerülete, már csak egy végpont kéne, hogy az 
+            új értékek segítségével újra számoltassuk az egészet. És pontosan ezt fogja tenni a <function>mouseReleaseEvent</function>.
+            De nem csak az egérrel léphetünk interakcióba a programmal, van lehetőségünk az "n" billentyű lenyomásával is. Ebben segít nekünk a <function>keyPressEvent</function>, mely 
+            hasonló az előbbiekhez, viszont ez billentyű leütést figyel. Amit csinál az nem más, mint, hogy az aktuális iterációs határt megduplázza és újraszámoltatja a halmazt, hogy 
+            pontosabb eredményt kapjunk. A <function>vissza</function>-ból kettőnk is van. Amelyik paramétereket is kap az meghatározza az aktuális sornak a pixeleinek a színét. A paraméter 
+            nélküli viszont csak már visszaállítja az értékeket alapértelmezetbe. 
+        </para> 
+        <para>
+            Na most nézzük a <function>FrakSzal</function>-at ahol a munka folyik:  
+        </para>
+        <programlisting language="c++">
+<![CDATA[ 
+#include "frakszal.h"
+
+FrakSzal::FrakSzal(double a, double b, double c, double d,
+                   int szelesseg, int magassag, int iteraciosHatar, FrakAblak *frakAblak)
+{
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+    this->szelesseg = szelesseg;
+    this->iteraciosHatar = iteraciosHatar;
+    this->frakAblak = frakAblak;
+    this->magassag = magassag;
+
+    egySor = new int[szelesseg];
+}
+
+FrakSzal::~FrakSzal()
+{
+    delete[] egySor;
+}
+
+void FrakSzal::run()
+{
+    // A [a,b]x[c,d] tartományon milyen sûrû a
+    // megadott szélesség, magasság háló:
+    double dx = (b-a)/szelesseg;
+    double dy = (d-c)/magassag;
+    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+    
+    int iteracio = 0;
+    
+    for(int j=0; j<magassag; ++j) {
+       
+        for(int k=0; k<szelesseg; ++k) {
+           
+            reC = a+k*dx;
+            imC = d-j*dy;
+            
+            reZ = 0;
+            imZ = 0;
+            iteracio = 0;
+            
+            while(reZ*reZ + imZ*imZ < 4 && iteracio < iteraciosHatar) {
+                // z_{n+1} = z_n * z_n + c
+
+                ujreZ = reZ*reZ - imZ*imZ + reC;
+                ujimZ = 2*reZ*imZ + imC;
+
+                reZ = ujreZ;
+                imZ = ujimZ;
+
+                ++iteracio;
+
+            }
+
+            iteracio %= 256;
+
+           
+            egySor[k] = iteracio;
+        }
+  
+        frakAblak->vissza(j, egySor, szelesseg);
+    }
+    frakAblak->vissza();
+
+}
+]]>
+        </programlisting>
+        <para>
+            A konstruktornak átadjuk az értékeket, meg elkészítünk egy <type>integer</type> tömböt. A destruktor csak ezt a tömböt fogja törölni. A lényeg viszont a <function>run</function>-ban 
+            van. Ez a programunk szíve, lelke. Ez a motor ami az egész mögött áll: A matematikai számítások. A módszer és a megvalósítás lényegében ugyan az mint a többi változatban, tehát nem 
+            ismételném meg, hogy kerüljem az önismétlést. Minden sor pixeljét eltároljuk az <varname>egySor</varname> tömb egy eleme ként, majd ezeket átadjuk soronként a <function>vissza</function> 
+            függvénynek, hogy meghatározza sorban lévő pixelek színét. Végül ha az utolsó sor is megvolt akkor pedig meghívjuk a másik <function>vissza</function> függvényt, hogy visszaállítsuk az 
+            értékeket nullára, így felkíszülve egy újabb számításra. 
         </para>
         <mediaobject>
             <imageobject>
@@ -680,241 +955,220 @@ main ( int argc, char *argv[] )
             sudo apt-get install openjdk-8-jdk  
             ]]>
         </screen>
-        <para>A következő program Bátfai Norbert munkája:  </para>
+        <para>A következő program Bátfai Norbert munkájának egy általam kiegészített változata (Nagyító):  </para>
         <programlisting language = "java">
             <![CDATA[ 
-                            
+import java.awt.*;
 /*
-* MandelbrotHalmaz.java
-*
-* DIGIT 2005, Javat tanítok
-* Bátfai Norbert, nbatfai@inf.unideb.hu
-*
-*/
-/**
-* A Mandelbrot halmazt kiszámoló és kirajzoló osztály.
-*
-* @author Bátfai Norbert, nbatfai@inf.unideb.hu
-* @version 0.0.1
-*/
-public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
-   /** A komplex sík vizsgált tartománya [a,b]x[c,d]. */
-   protected double a, b, c, d;
-   /** A komplex sík vizsgált tartományára feszített
-    * háló szélessége és magassága. */
-   protected int szélesség, magasság;
-   /** A komplex sík vizsgált tartományára feszített hálónak megfelelő kép.*/
-   protected java.awt.image.BufferedImage kép;
-   /** Max. hány lépésig vizsgáljuk a z_{n+1} = z_n * z_n + c iterációt?
-    * (tk. most a nagyítási pontosság) */
-   protected int iterációsHatár = 255;
-   /** Jelzi, hogy éppen megy-e a szamítás? */
-   protected boolean számításFut = false;
-   /** Jelzi az ablakban, hogy éppen melyik sort számoljuk. */
-   protected int sor = 0;
-   /** A pillanatfelvételek számozásához. */
-   protected static int pillanatfelvételSzámláló = 0;
-   /**
-    * Létrehoz egy a Mandelbrot halmazt a komplex sík
-    * [a,b]x[c,d] tartománya felett kiszámoló
-    * <code>MandelbrotHalmaz</code> objektumot.
+    * MandelbrotHalmaz.java
     *
-    * @param      a              a [a,b]x[c,d] tartomány a koordinátája.
-    * @param      b              a [a,b]x[c,d] tartomány b koordinátája.
-    * @param      c              a [a,b]x[c,d] tartomány c koordinátája.
-    * @param      d              a [a,b]x[c,d] tartomány d koordinátája.
-    * @param      szélesség      a halmazt tartalmazó tömb szélessége.
-    * @param      iterációsHatár a számítás pontossága.
+    * DIGIT 2005, Javat tanítok
+    * Bátfai Norbert, nbatfai@inf.unideb.hu
+    *
     */
-   public MandelbrotHalmaz(double a, double b, double c, double d,
-           int szélesség, int iterációsHatár) {
-       this.a = a;
-       this.b = b;
-       this.c = c;
-       this.d = d;
-       this.szélesség = szélesség;
-       this.iterációsHatár = iterációsHatár;
-       // a magasság az (b-a) / (d-c) = szélesség / magasság
-       // arányból kiszámolva az alábbi lesz:
-       this.magasság = (int)(szélesség * ((d-c)/(b-a)));
-       // a kép, amire rárajzoljuk majd a halmazt
-       kép = new java.awt.image.BufferedImage(szélesség, magasság,
-               java.awt.image.BufferedImage.TYPE_INT_RGB);
-       // Az ablak bezárásakor kilépünk a programból.
-       addWindowListener(new java.awt.event.WindowAdapter() {
-           public void windowClosing(java.awt.event.WindowEvent e) {
-               setVisible(false);
-               System.exit(0);
-           }
-       });
-       // A billentyűzetről érkező események feldolgozása
-       addKeyListener(new java.awt.event.KeyAdapter() {
-           // Az 's', 'n' és 'm' gombok lenyomását figyeljük 
-           public void keyPressed(java.awt.event.KeyEvent e) {
-               if(e.getKeyCode() == java.awt.event.KeyEvent.VK_S)
-                   pillanatfelvétel();
-               // Az 'n' gomb benyomásával pontosabb számítást végzünk.
-               else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_N) {
-                   if(számításFut == false) {
-                       MandelbrotHalmaz.this.iterációsHatár += 256;
-                       // A számítás újra indul:
-                       számításFut = true;
-                       new Thread(MandelbrotHalmaz.this).start();
-                   }
-               // Az 'm' gomb benyomásával pontosabb számítást végzünk,
-               // de közben sokkal magasabbra vesszük az iterációs
-               // határt, mint az 'n' használata esetén
-               } else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_M) {
-                   if(számításFut == false) {
-                       MandelbrotHalmaz.this.iterációsHatár += 10*256;
-                       // A számítás újra indul:
-                       számításFut = true;
-                       new Thread(MandelbrotHalmaz.this).start();
-                   }
-               }
-           }
-       });
-       // Ablak tulajdonságai
-       setTitle("A Mandelbrot halmaz");
-       setResizable(false);
-       setSize(szélesség, magasság);
-       setVisible(true);
-       // A számítás indul:
-       számításFut = true;
-       new Thread(this).start();
-   }
-   /**
-    * A halmaz aktuális állapotának kirajzolása.
+/**
+    * A Mandelbrot halmazt kiszámoló és kirajzoló osztály.
+    * A programot módosította/kiegészítette: Czanik András
+    *
+    * @author Bátfai Norbert, nbatfai@inf.unideb.hu
+    * @version 0.0.1
     */
-   public void paint(java.awt.Graphics g) {
-       // A Mandelbrot halmaz kirajzolása
-       g.drawImage(kép, 0, 0, this);
-       // Ha éppen fut a számítás, akkor egy vörös
-       // vonallal jelöljük, hogy melyik sorban tart:
-       if(számításFut) {
-           g.setColor(java.awt.Color.RED);
-           g.drawLine(0, sor, getWidth(), sor);
-       }
-   }
-   // Ne villogjon a felület (mert a "gyári" update()
-   // lemeszelné a vászon felületét).
-   public void update(java.awt.Graphics g) {
-       paint(g);
-   }
-   /**
-    * Pillanatfelvételek készítése.
-    */
-   public void pillanatfelvétel() {
-       // Az elmentendő kép elkészítése:
-       java.awt.image.BufferedImage mentKép =
-               new java.awt.image.BufferedImage(szélesség, magasság,
-               java.awt.image.BufferedImage.TYPE_INT_RGB);
-       java.awt.Graphics g = mentKép.getGraphics();
-       g.drawImage(kép, 0, 0, this);
-       g.setColor(java.awt.Color.BLUE);
-       g.drawString("a=" + a, 10, 15);
-       g.drawString("b=" + b, 10, 30);
-       g.drawString("c=" + c, 10, 45);
-       g.drawString("d=" + d, 10, 60);
-       g.drawString("n=" + iterációsHatár, 10, 75);
-       g.dispose();
-       // A pillanatfelvétel képfájl nevének képzése:
-       StringBuffer sb = new StringBuffer();
-       sb = sb.delete(0, sb.length());
-       sb.append("MandelbrotHalmaz_");
-       sb.append(++pillanatfelvételSzámláló);
-       sb.append("_");
-       // A fájl nevébe belevesszük, hogy melyik tartományban
-       // találtuk a halmazt:
-       sb.append(a);
-       sb.append("_");
-       sb.append(b);
-       sb.append("_");
-       sb.append(c);
-       sb.append("_");
-       sb.append(d);
-       sb.append(".png");
-       // png formátumú képet mentünk
-       try {
-           javax.imageio.ImageIO.write(mentKép, "png",
-                   new java.io.File(sb.toString()));
-       } catch(java.io.IOException e) {
-           e.printStackTrace();
-       }
-   }
-   /** 
-    * A Mandelbrot halmaz számítási algoritmusa.
-    * Az algoritmus részletes ismertetését lásd például a
-    * [BARNSLEY KÖNYV] (M. Barnsley: Fractals everywhere, 
-    * Academic Press, Boston, 1986) hivatkozásban vagy 
-    * ismeretterjesztő szinten a [CSÁSZÁR KÖNYV] hivatkozásban.
-    */     
-    public void run() {
-       // A [a,b]x[c,d] tartományon milyen sűrű a
-       // megadott szélesség, magasság háló:
-       double dx = (b-a)/szélesség;
-       double dy = (d-c)/magasság;
-       double reC, imC, reZ, imZ, ujreZ, ujimZ;
-       int rgb;
-       // Hány iterációt csináltunk?
-       int iteráció = 0;
-       // Végigzongorázzuk a szélesség x magasság hálót:
-       for(int j=0; j<magasság; ++j) {
-           sor = j;
-           for(int k=0; k<szélesség; ++k) {
-               // c = (reC, imC) a háló rácspontjainak
-               // megfelelő komplex szám
-               reC = a+k*dx;
-               imC = d-j*dy;
-               // z_0 = 0 = (reZ, imZ)
-               reZ = 0;
-               imZ = 0;
-               iteráció = 0;
-               // z_{n+1} = z_n * z_n + c iterációk
-               // számítása, amíg |z_n| < 2 vagy még
-               // nem értük el a 255 iterációt, ha
-               // viszont elértük, akkor úgy vesszük,
-               // hogy a kiinduláci c komplex számra
-               // az iteráció konvergens, azaz a c a
-               // Mandelbrot halmaz eleme
-               while(reZ*reZ + imZ*imZ < 4 && iteráció < iterációsHatár) {
-                   // z_{n+1} = z_n * z_n + c
-                   ujreZ = reZ*reZ - imZ*imZ + reC;
-                   ujimZ = 2*reZ*imZ + imC;
-                   reZ = ujreZ;
-                   imZ = ujimZ;
-                   
-                   ++iteráció;
-                   
-               }
-               // ha a < 4 feltétel nem teljesült és a
-               // iteráció < iterációsHatár sérülésével lépett ki, azaz
-               // feltesszük a c-ről, hogy itt a z_{n+1} = z_n * z_n + c
-               // sorozat konvergens, azaz iteráció = iterációsHatár
-               // ekkor az iteráció %= 256 egyenlő 255, mert az esetleges
-               // nagyítasok során az iteráció = valahány * 256 + 255
-               iteráció %= 256;
-               // így a halmaz elemeire 255-255 értéket használjuk,
-               // azaz (Red=0,Green=0,Blue=0) fekete színnel:
-               rgb = (255-iteráció)|
-                       ((255-iteráció) << 8) |
-                       ((255-iteráció) << 16);
-               // rajzoljuk a képre az éppen vizsgált pontot:
-               kép.setRGB(k, j, rgb);
-           }
-           repaint();
-       }
-       számításFut = false;
-   }
-   /**
-    * Példányosít egy Mandelbrot halmazt kiszámoló obektumot.
-    */
-   public static void main(String[] args) {
-       // A halmazt a komplex sík [-2.0, .7]x[-1.35, 1.35] tartományában
-       // keressük egy 400x400-as hálóval:
-       new MandelbrotHalmaz(-2.0, .7, -1.35, 1.35, 600, 255);
-   }
-}                               
+public class MandelbrotZoom extends java.awt.Frame implements Runnable {
+
+    protected double a, b, c, d;
+    protected int szélesség, magasság;
+    protected java.awt.image.BufferedImage kép;
+    protected int iterációsHatár = 255;
+    protected boolean számításFut = false;
+    protected int sor = 0;
+    protected static int pillanatfelvételSzámláló = 0;
+
+    public static int x;
+    public static int y;
+    public static int mx;
+    public static int my;
+
+    public MandelbrotZoom(double a, double b, double c, double d,
+            int szélesség, int iterációsHatár) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.szélesség = szélesség;
+        this.iterációsHatár = iterációsHatár;
+        this.magasság = (int)(szélesség * ((d-c)/(b-a)));
+        kép = new java.awt.image.BufferedImage(szélesség, magasság,
+                java.awt.image.BufferedImage.TYPE_INT_RGB);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                setVisible(false);
+                System.exit(0);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if(e.getKeyCode() == java.awt.event.KeyEvent.VK_S)
+                    pillanatfelvétel();
+
+                else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_N) {
+                    if(számításFut == false) {
+                        MandelbrotZoom.this.iterációsHatár += 256;
+
+                        számításFut = true;
+                        new Thread(MandelbrotZoom.this).start();
+                    }
+
+                } else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_M) {
+                    if(számításFut == false) {
+                        MandelbrotZoom.this.iterációsHatár += 10*256;
+
+                        számításFut = true;
+                        new Thread(MandelbrotZoom.this).start();
+                    }
+                }
+            }
+        });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent me) {
+                x = me.getX();
+                y = me.getY();
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent me) {
+                számításFut = true;
+                
+                double dx = (b - a) / szélesség;
+                double dy = (d - c) / magasság;
+
+                double range = 60;
+
+                double a = MandelbrotZoom.this.a+x*dx;
+                double b = MandelbrotZoom.this.a+x*dx+range*dx;
+                double c = MandelbrotZoom.this.d-y*dy-range*dy;
+                double d = MandelbrotZoom.this.d-y*dy;
+
+                MandelbrotZoom.this.a = a; 
+                MandelbrotZoom.this.b = b; 
+                MandelbrotZoom.this.c = c; 
+                MandelbrotZoom.this.d = d; 
+
+                new Thread(MandelbrotZoom.this).start();
+            }
+        });
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent me) {
+                int mx = me.getX() - x;
+                int my = mx;
+
+                repaint();
+            }
+        });
+
+        setTitle("A Mandelbrot halmaz");
+        setResizable(false);
+        setSize(szélesség, magasság);
+        setVisible(true);
+
+        számításFut = true;
+        new Thread(this).start();
+    }
+
+    public void paint(java.awt.Graphics g) {
+        g.drawImage(kép, 0, 0, this);
+        if(számításFut) {
+            g.setColor(java.awt.Color.RED);
+            g.drawLine(0, sor, getWidth(), sor);
+        }
+    }
+
+    public void update(java.awt.Graphics g) {
+        paint(g);
+    }
+
+    public void pillanatfelvétel() {
+        java.awt.image.BufferedImage mentKép =
+                new java.awt.image.BufferedImage(szélesség, magasság,
+                java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics g = mentKép.getGraphics();
+        g.drawImage(kép, 0, 0, this);
+        g.setColor(java.awt.Color.BLUE);
+        g.drawString("a=" + a, 10, 15);
+        g.drawString("b=" + b, 10, 30);
+        g.drawString("c=" + c, 10, 45);
+        g.drawString("d=" + d, 10, 60);
+        g.drawString("n=" + iterációsHatár, 10, 75);
+        g.dispose();
+
+        StringBuffer sb = new StringBuffer();
+        sb = sb.delete(0, sb.length());
+        sb.append("MandelbrotZoom_");
+        sb.append(++pillanatfelvételSzámláló);
+        sb.append("_");
+        sb.append(a);
+        sb.append("_");
+        sb.append(b);
+        sb.append("_");
+        sb.append(c);
+        sb.append("_");
+        sb.append(d);
+        sb.append(".png");
+
+        try {
+            javax.imageio.ImageIO.write(mentKép, "png",
+                    new java.io.File(sb.toString()));
+        } catch(java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    
+        public void run() {
+
+        double dx = (b-a)/szélesség;
+        double dy = (d-c)/magasság;
+        double reC, imC, reZ, imZ, ujreZ, ujimZ;
+        int rgb;
+        int iteráció = 0;
+
+        for(int j=0; j<magasság; ++j) {
+            sor = j;
+            for(int k=0; k<szélesség; ++k) {
+                reC = a+k*dx;
+                imC = d-j*dy;
+                reZ = 0;
+                imZ = 0;
+                iteráció = 0;
+
+                while(reZ*reZ + imZ*imZ < 4 && iteráció < iterációsHatár) {
+                    ujreZ = reZ*reZ - imZ*imZ + reC;
+                    ujimZ = 2*reZ*imZ + imC;
+                    reZ = ujreZ;
+                    imZ = ujimZ;
+                    
+                    ++iteráció;
+                    
+                }
+                iteráció %= 256;
+                rgb = (255-iteráció)|
+                        ((255-iteráció) << 8) |
+                        ((255-iteráció) << 16);
+                kép.setRGB(k, j, rgb);
+            }
+            repaint();
+        }
+        számításFut = false;
+    }
+    public static void main(String[] args) {
+        new MandelbrotZoom(-2.0, .7, -1.35, 1.35, 600, 255);
+    }
+}                
+                
+        
             ]]>
         </programlisting>
         <para>
@@ -994,6 +1248,55 @@ public MandelbrotHalmaz(double a, double b, double c, double d,
             Amikor az "n" gombot ütjük le, akkor az iterációs határt megnöveljük 256-al és újraszámoltatjuk a halmazt egy pontosabb eredményért. Hasonlóan jár el az "m" billenytű is, azzal a különbséggel, 
             hogy itt nem 256-al növelünk, hanem a 2560-al, azaz a tízszeresével. Végül pedig beállítjuk az ablak tulajdonságait, úgyis mint a címét, megtiltjuk az átméretezést, meghatározzuk a méretet és láthatóvá 
             tesszük (ez utóbbi tulajdonságát megvonjuk a bezárás előtt). 
+        </para>
+        <programlisting language = "java">
+            <![CDATA[ 
+addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mousePressed(java.awt.event.MouseEvent me) {
+        x = me.getX();
+        y = me.getY();
+    }
+
+    @Override
+    public void mouseReleased(java.awt.event.MouseEvent me) {
+        számításFut = true;
+        
+        double dx = (b - a) / szélesség;
+        double dy = (d - c) / magasság;
+
+        double range = 60;
+
+        double a = MandelbrotZoom.this.a+x*dx;
+        double b = MandelbrotZoom.this.a+x*dx+range*dx;
+        double c = MandelbrotZoom.this.d-y*dy-range*dy;
+        double d = MandelbrotZoom.this.d-y*dy;
+
+        MandelbrotZoom.this.a = a; 
+        MandelbrotZoom.this.b = b; 
+        MandelbrotZoom.this.c = c; 
+        MandelbrotZoom.this.d = d; 
+
+        new Thread(MandelbrotZoom.this).start();
+    }
+});
+addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+
+    @Override
+    public void mouseMoved(java.awt.event.MouseEvent me) {
+        int mx = me.getX() - x;
+        int my = mx;
+
+        repaint();
+    }
+});
+            ]]>
+        </programlisting>
+        <para>
+            Ezt a részt külön venném, azon egyszerű okból, hogy ez az én hozzáaadott értékem a programhoz. Az eredeti verzió sajnos nem tudott nagyítani, ami a feladat kritériuma is. 
+            Pont ezért ebben a rövid részletben megoldottam ezt, hogy az egérrel kijelölt területbe zoomoljunk bele. Az elv egy az egyben ugyan az mint a C++ verzióban. Tehát bekérjük 
+            az egér pozícióját mikor lenyomjuk és mikor elengedjük. Közben mikör mozog az egér, a <varname>my</varname> és <varname>mx</varname>-ben eltároljuk az így kijelölt négyzet fő 
+            pontjait, majd felengedéskor ezeket átadjuk a konstruktornak, hogy ezalapján legyen szíves újraszámolni a halmazt. 
         </para>
         <programlisting language = "java">
             <![CDATA[ 
@@ -1118,17 +1421,12 @@ public static void main(String[] args) {
         </screen>
         <mediaobject>
             <imageobject>
-                <imagedata fileref="./Pics/mandelJava.png" format="PNG" scale="50"/>
+                <imagedata fileref="./Pics/MandelbrotZoom_1_-20_07_-135_135.png" format="PNG" scale="50"/>
             </imageobject>
         </mediaobject>
         <mediaobject>
             <imageobject>
-                <imagedata fileref="./Pics/mandelJava1.png" format="PNG" scale="50"/>
-            </imageobject>
-        </mediaobject>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="./Pics/mandelJava2.png" format="PNG" scale="50"/>
+                <imagedata fileref="./Pics/MandelbrotZoom_2_-07264999999999999_-04564999999999999_05085_07785.png" format="PNG" scale="50"/>
             </imageobject>
         </mediaobject>
     </section>
@@ -1137,5 +1435,319 @@ public static void main(String[] args) {
         <para>
             <link xlink:href="https://youtu.be/zO6cNp8L4-Q">https://youtu.be/zO6cNp8L4-Q</link>
         </para>
+        <para>
+            Ennél a feladatnál Stevenek fel kellett szaladnia a pályán hogy megközelítse a lávát annyira amennyire csak lehet. Azután 
+            pedig forduljon meg és szedjen annyi virágot amennyit csak tud mielőtt utoléri a végzet narancssárga lávája. 
+        </para>
+        <programlisting language="python">
+<![CDATA[ 
+from __future__ import print_function
+# ------------------------------------------------------------------------------------------------
+# Copyright (c) 2016 Microsoft Corporation
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+# NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------------------------
+
+# Tutorial sample #2: Run simple mission using raw XML
+
+# Added modifications by Norbert Bátfai (nb4tf4i) batfai.norbert@inf.unideb.hu, mine.ly/nb4tf4i.1
+# 2018.10.18, https://bhaxor.blog.hu/2018/10/18/malmo_minecraft
+# 2020.02.02, NB4tf4i's Red Flowers, http://smartcity.inf.unideb.hu/~norbi/NB4tf4iRedFlowerHell
+
+
+from builtins import range
+import MalmoPython
+import os
+import sys
+import time
+import random
+import json
+import math
+
+if sys.version_info[0] == 2:
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+else:
+    import functools
+    print = functools.partial(print, flush=True)
+
+# Create default Malmo objects:
+
+agent_host = MalmoPython.AgentHost()
+try:
+    agent_host.parse( sys.argv )
+except RuntimeError as e:
+    print('ERROR:',e)
+    print(agent_host.getUsage())
+    exit(1)
+if agent_host.receivedArgument("help"):
+    print(agent_host.getUsage())
+    exit(0)
+
+# -- set up the mission -- #
+missionXML_file='nb4tf4i_d.xml'
+with open(missionXML_file, 'r') as f:
+    print("NB4tf4i's Red Flowers (Red Flower Hell) - DEAC-Hackers Battle Royale Arena\n")
+    print("NB4tf4i vörös pipacsai (Vörös Pipacs Pokol) - DEAC-Hackers Battle Royale Arena\n\n")
+    print("The aim of this first challenge, called nb4tf4i's red flowers, is to collect as many red flowers as possible before the lava flows down the hillside.\n")
+    print("Ennek az első, az nb4tf4i vörös virágai nevű kihívásnak a célja összegyűjteni annyi piros virágot, amennyit csak lehet, mielőtt a láva lefolyik a hegyoldalon.\n")    
+    print("Norbert Bátfai, batfai.norbert@inf.unideb.hu, https://arato.inf.unideb.hu/batfai.norbert/\n\n")    
+    print("Loading mission from %s" % missionXML_file)
+    mission_xml = f.read()
+    my_mission = MalmoPython.MissionSpec(mission_xml, True)
+    my_mission.drawBlock( 0, 0, 0, "lava")
+
+
+class Hourglass:
+    def __init__(self, charSet):
+        self.charSet = charSet
+        self.index = 0
+    def cursor(self):
+        self.index=(self.index+1)%len(self.charSet)
+        return self.charSet[self.index]
+
+hg = Hourglass('|/-\|')
+
+class Steve:
+    def __init__(self, agent_host):
+        self.agent_host = agent_host
+        self.x = 0
+        self.y = 0
+        self.z = 0        
+        self.yaw = 0
+        self.pitch = 0
+        self.lookingat = 0     
+        
+    def run(self):
+        world_state = self.agent_host.getWorldState()
+        # Loop until mission ends:
+        j = 1
+        i = 3
+        
+        escape = 0
+        move = 13
+        ended = 0
+        poppy = 0
+         
+        self.agent_host.sendCommand( "turn -1" )
+        time.sleep(1)
+        for i in range(4):
+            self.agent_host.sendCommand( "move 1" )
+            time.sleep(0.1)
+        self.agent_host.sendCommand( "look 1" )
+        self.agent_host.sendCommand( "move 0" )
+        time.sleep(.5)
+        self.agent_host.sendCommand( "attack 1" )
+        time.sleep(1)
+        self.agent_host.sendCommand( "look -1" )
+        self.agent_host.sendCommand( "move 1" )
+        time.sleep(0.1)
+        self.agent_host.sendCommand( "jumpmove 1" )
+        time.sleep(0.5)
+        self.agent_host.sendCommand( "move 1" )
+        time.sleep(0.1)
+        #self.agent_host.sendCommand( "look -.2" )
+
+        while world_state.is_mission_running:
+
+            
+            print("--- nb4tf4i arena -----------------------------------\n")
+
+        
+                    
+            if world_state.number_of_observations_since_last_state != 0:
+                            
+                sensations = world_state.observations[-1].text
+                print("    sensations: ", sensations)                
+                observations = json.loads(sensations)
+                nbr5x5x5 = observations.get("nbr5x5", 0)
+                print("    5x5x5 neighborhood of Steve: ", nbr5x5x5)
+                            
+                if "Yaw" in observations:
+                    self.yaw = int(observations["Yaw"])
+                if "Pitch" in observations:
+                    self.pitch = int(observations["Pitch"])
+                if "XPos" in observations:
+                    self.x = int(observations["XPos"])
+                if "ZPos" in observations:
+                    self.z = int(observations["ZPos"])        
+                if "YPos" in observations:
+                    self.y = int(observations["YPos"])  
+                            
+                print("    Steve's Coords: ", self.x, self.y, self.z)        
+                print("    Steve's Yaw: ", self.yaw)        
+                print("    Steve's Pitch: ", self.pitch)
+
+                if "LineOfSight" in observations:
+                    LineOfSight = observations["LineOfSight"]
+                    self.lookingat = LineOfSight["type"]
+                    print("    Steve's <): ", self.lookingat)
+
+                
+                #itt van a lényeg amúgy, az első felugrásig a while ciklus előtt van külön megirva
+                    
+                #if self.lookingat == "flowing_lava": #itt talalkozik a viraggal meg fel is veszi
+            
+                for i in range(125):
+                    if nbr5x5x5[i] == "flowing_lava" or nbr5x5x5[i] == "lava":
+                        print("     Lavaaaa!")
+                        if escape == 0:
+                            self.agent_host.sendCommand( "turn -1" )
+                            time.sleep(0.01)
+                            self.agent_host.sendCommand( "turn -1" )
+                            time.sleep(0.01)
+                        escape = 1 #ez az escape igaz hamis hogy kell-e menekülni, akkor már nem ugrik csak fut meg ne forogjon 
+                    
+                self.agent_host.sendCommand( "move 1" )
+                time.sleep(0.01)
+                self.agent_host.sendCommand( "move 1" )
+                time.sleep(0.01)
+                if escape == 0:
+                    self.agent_host.sendCommand( "jumpmove 1" )
+                    time.sleep(0.5)
+                    
+                    
+            world_state = self.agent_host.getWorldState()
+            if self.y < 7 and escape == 1:
+                poppy = 1
+
+            if poppy == 1: 
+                for i in range(4):
+                    self.agent_host.sendCommand( "turn 1" )
+                    time.sleep(.1)
+                    for j in range(move):
+                        
+                        if world_state.number_of_observations_since_last_state != 0:
+                                
+                            sensations = world_state.observations[-1].text
+                            print("    sensations: ", sensations)                
+                            observations = json.loads(sensations)
+                            nbr3x3x3 = observations.get("nbr3x3", 0)
+                            print("    3x3x3 neighborhood of Steve: ", nbr3x3x3)
+                                
+                            if "Yaw" in observations:
+                                self.yaw = int(observations["Yaw"])
+                            if "Pitch" in observations:
+                                self.pitch = int(observations["Pitch"])
+                            if "XPos" in observations:
+                                self.x = int(observations["XPos"])
+                            if "ZPos" in observations:
+                                self.z = int(observations["ZPos"])        
+                            if "YPos" in observations:
+                                self.y = int(observations["YPos"])  
+                                
+                            print("    Steve's Coords: ", self.x, self.y, self.z)        
+                            print("    Steve's Yaw: ", self.yaw)        
+                            print("    Steve's Pitch: ", self.pitch)
+
+                            if "LineOfSight" in observations:
+                                LineOfSight = observations["LineOfSight"]
+                                self.lookingat = LineOfSight["type"]
+                            print("    Steve's <): ", self.lookingat)
+
+                
+                        
+
+                            if nbr3x3x3[12] == "red_flower" or nbr3x3x3[13] == "red_flower" or nbr3x3x3[14] == "red_flower":
+                                if nbr3x3x3[13] == "red_flower":
+                                    self.agent_host.sendCommand( "move -1" )
+                                    time.sleep(.1) #.5
+                                if nbr3x3x3[14] == "red_flower":
+                                    self.agent_host.sendCommand( "move 0" )
+                                time.sleep(.5) #.5
+                                self.agent_host.sendCommand( "look 1" )
+                                #self.agent_host.sendCommand( "look .5" )
+                                self.agent_host.sendCommand( "move 0" )
+                                time.sleep(.5) #.5
+                                self.agent_host.sendCommand( "attack 1" )
+                                time.sleep(.5) #1
+                                self.agent_host.sendCommand( "look -.5" )
+                                #self.agent_host.sendCommand( "look -1" )
+                                self.agent_host.sendCommand( "jumpmove 1" )
+                                time.sleep(0.5)
+                            
+
+                        world_state = self.agent_host.getWorldState()
+                        '''
+                        if self.lookingat == "red_flower": #itt talalkozik a viraggal meg fel is veszi
+                            print("     VIRAAAG!")
+                            self.agent_host.sendCommand( "move 1" )
+                            time.sleep(.5)
+                            self.agent_host.sendCommand( "look 1" )
+                            self.agent_host.sendCommand( "move 0" )
+                            time.sleep(1.5)
+                            self.agent_host.sendCommand( "attack 1" )
+                            time.sleep(1.5)
+                            self.agent_host.sendCommand( "look -1" )
+                            self.agent_host.sendCommand( "jumpmove 1" )
+                            time.sleep(1)
+                        '''
+                        #innen kezdodik a mozgasa
+                        self.agent_host.sendCommand( "move 1" )
+                        time.sleep(0.1)
+
+                    world_state = self.agent_host.getWorldState()
+
+                self.agent_host.sendCommand( "jumpmove 1" )
+                time.sleep(0.5)
+                self.agent_host.sendCommand( "move 1" )
+                time.sleep(0.1)
+                move = move + 4 
+
+
+
+            
+
+
+num_repeats = 1
+for ii in range(num_repeats):
+
+    my_mission_record = MalmoPython.MissionRecordSpec()
+
+    # Attempt to start a mission:
+    max_retries = 6
+    for retry in range(max_retries):
+        try:
+            agent_host.startMission( my_mission, my_mission_record )
+            break
+        except RuntimeError as e:
+            if retry == max_retries - 1:
+                print("Error starting mission:", e)
+                exit(1)
+            else:
+                print("Attempting to start the mission:")
+                time.sleep(2)
+
+    # Loop until mission starts:
+    print("   Waiting for the mission to start ")
+    world_state = agent_host.getWorldState()
+
+    while not world_state.has_mission_begun:
+        print("\r"+hg.cursor(), end="")
+        time.sleep(0.15)
+        world_state = agent_host.getWorldState()
+        for error in world_state.errors:
+            print("Error:",error.text)
+
+    print("NB4tf4i Red Flower Hell running\n")
+    steve = Steve(agent_host)
+    steve.run()
+
+print("Mission ended")
+# Mission has ended.
+]]>
+        </programlisting>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                

@@ -5,8 +5,13 @@
             <keyword/>
         </keywordset>
     </info>
+    <note>
+        <title>Futtatási videó: </title>
+        <para><link xlink:href="https://youtu.be/qiZUY0LIs2w">https://youtu.be/qiZUY0LIs2w</link></para>
+    </note>
+    <!--
     <section>
-        <title>Hangyaszimulációk</title>
+        <title>Passz: Hangyaszimulációk</title>
         <para>
             Írj Qt C++-ban egy hangyaszimulációs programot, a forrásaidról utólag reverse engineering jelleggel
             készíts UML osztálydiagramot is!
@@ -123,9 +128,11 @@
             <para>
                 Folyt. köv. 
             </para>     
-    </section>        
+    </section>
+-->        
+<!--
     <section>
-        <title>Java életjáték</title>
+        <title>Passz: Java életjáték</title>
         <para>
             Írd meg Java-ban a John Horton Conway-féle életjátékot, 
             valósítsa meg a sikló-kilövőt!
@@ -136,44 +143,9 @@
         <para>
             Megoldás forrása: <link xlink:href=""></link>               
         </para>
-        <para>
-            Az életjáték (Game of Life) John Conway Brit matematikus munkája. Játék ként van említve, de a passzív játék megnevezés 
-            talán ponstosabb, ugyanis a játékosnak a kezdő alakzat megrajzolásán túl nem sok szerepe van a játékban, inkább megfigyelőként 
-            vsz részt. Érdekes, hogy egy időben ez egy aránylag népszerű játék volt Amerikában. 
-        </para>        
-        <para>
-            A játék menete: 
-            Adott egy tábla (négyzetháló) ahova a játékos pontokat, úgynevezett sejteket helyezhet el. A játék körökből áll, melyek 
-            generációk ként van meghivatkozva. Ezekben a körökben a sejtünk vagy túlél, vagy elpusztúl, vagy szaporodik. Hogy az adott körben 
-            melyik törénik azt három egyszerű szabály határozza meg, a szomszédok számának függvényében (egy sejtnek 8 szomszéda lenne):  
-        </para>    
-        <itemizedlist mark='bullet'>
-            <listitem>
-                <para>
-                    Egy sejt 2 vagy 3 élő szomszéd esetében életben marad.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                    Egy sejt elpusztul ha 2-nél kevesebb vagy 3-nál több élő szomszédja van
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                    Egy új sejt születik, ha pontosan 3 élő szomszédja van.
-                </para>
-            </listitem>
-        </itemizedlist>  
-        <para>
-            Ezekkel az egyszerű szabályokkal viszont lehetőségünk van olyan speciális alakzatokra is mint példáúl a sikló (glider) 
-            melynek a különlegessége, hogy pár lépésen belül vissza alakúl saját magává, viszont pár egységgel odébb, ezáltal mozog.
-        </para>
-        <para>
-            A szabályok és a speciális alakzatok kihasználásával pedig létrehozhatunk akár komplex automatákat. Egy ilyet mutat be az alábbi 
-            program is. Ennek az automatának a neve Glider Gun (siklóágyú), melyet Bill Gosper alkotott meg és remekűl reprezentálja, hogy 
-            mennyi mindent lehet csinálni még egy ilyen egyszerű játékkal is. 
-        </para>         
+                 
     </section> 
+-->
     
     <section>
         <title>Extra: Sejtautomaták a játékiparban: </title>
@@ -329,7 +301,43 @@ public class MapGenerator : MonoBehaviour {
             Megoldás forrása: <link xlink:href=""></link>               
         </para>
         <para>
-            A játék alapmechanikáját már az előző feladatban tárgyaltuk, ezért itt már nem térnék ki rá. Inkább nézzük meg részenként. 
+            Az életjáték (Game of Life) John Conway Brit matematikus munkája. Játék ként van említve, de a passzív játék megnevezés 
+            talán ponstosabb, ugyanis a játékosnak a kezdő alakzat megrajzolásán túl nem sok szerepe van a játékban, inkább megfigyelőként 
+            vsz részt. Érdekes, hogy egy időben ez egy aránylag népszerű játék volt Amerikában. 
+        </para>        
+        <para>
+            A játék menete: 
+            Adott egy tábla (négyzetháló) ahova a játékos pontokat, úgynevezett sejteket helyezhet el. A játék körökből áll, melyek 
+            generációk ként van meghivatkozva. Ezekben a körökben a sejtünk vagy túlél, vagy elpusztúl, vagy szaporodik. Hogy az adott körben 
+            melyik törénik azt három egyszerű szabály határozza meg, a szomszédok számának függvényében (egy sejtnek 8 szomszéda lenne):  
+        </para>    
+        <itemizedlist mark='bullet'>
+            <listitem>
+                <para>
+                    Egy sejt 2 vagy 3 élő szomszéd esetében életben marad.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Egy sejt elpusztul ha 2-nél kevesebb vagy 3-nál több élő szomszédja van
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Egy új sejt születik, ha pontosan 3 élő szomszédja van.
+                </para>
+            </listitem>
+        </itemizedlist>  
+        <para>
+            Ezekkel az egyszerű szabályokkal viszont lehetőségünk van olyan speciális alakzatokra is mint példáúl a sikló (glider) 
+            melynek a különlegessége, hogy pár lépésen belül vissza alakúl saját magává, viszont pár egységgel odébb, ezáltal mozog.
+        </para>
+        <para>
+            A szabályok és a speciális alakzatok kihasználásával pedig létrehozhatunk akár komplex automatákat. Egy ilyet mutat be az alábbi 
+            program is. Ennek az automatának a neve Glider Gun (siklóágyú), melyet Bill Gosper alkotott meg és remekűl reprezentálja, hogy 
+            mennyi mindent lehet csinálni még egy ilyen egyszerű játékkal is. 
+        </para>
+        <para> 
             Kezdjük a sejtablak.cpp-vel: 
         </para>       
         <programlisting language='c++'><![CDATA[
@@ -377,11 +385,33 @@ public class MapGenerator : MonoBehaviour {
             Itt alapozzuk meg az ablakunkat. Meghatározzunk olyanokat, mint az ablak dimenzióit és a cellaméretet. Létrehozzuk a két rácsunkat. 
             A rácspontokat beállítjuk halott sejteknek, mivel majd csak ezután helyezzük el az automatánkat. Ezután meghívjuk a <function>sikloKilovo</function>
             függvényt, amely egyszerűen csak meghatározza, hogy a sikló ágyú kiinduló állapotához, mely sejteknek kell élőnek lennie és ezeket a 
-            rácspontokat halottról élőre állítja. Végül elindítjuk magát a játékot. 
+            rácspontokat halottról élőre állítja. Végül elindítjuk magát a játékot. Egy részt külön kiemelnék innen: 
+        </para>
+        <programlisting language="c++">
+<![CDATA[ 
+racsok = new bool**[2];
+racsok[0] = new bool*[magassag];
+for(int i=0; i<magassag; ++i)
+    racsok[0][i] = new bool [szelesseg];
+racsok[1] = new bool*[magassag];
+for(int i=0; i<magassag; ++i)
+    racsok[1][i] = new bool [szelesseg];
+]]>
+        </programlisting>
+        <para>
+            Az elv nagyon hasonló mint a Caesar fejezet első feladatában szereplő double ** alsó háromszögmátrixhoz. Itt két rácsot 
+            akarunk kapni, melyhez a tárban foglalunk helyet. A típusuk <type>bool**</type> mert <type>boolean</type> mátrixokat szeretnénk. 
+            Azaz egy tömbben tárolnunk kell a sorokat, egy másikban pedig az oszlopokat. Azért kell belőle kettő (mármint mátrixból), 
+            mert az életjáték egy fontos szabálya, hogy nem születhet ott új sejt ahol az előző iterációban egy sejt meghalt. 
         </para>
         <para>
-            Itt még található egy <function>paintEvent</function> ami ugyan úgy mint a hangyaszimuláció esetén, itt is a GUI kirajzolásáért és 
-            frissitésenkénti újrarajzolásáért felel. 
+            Utánna még egy dupla for ciklus végig halad és a rácscelláknak <type>halott</type> értékre állítja, majd meghívja a <function>sikloKilovo</function> 
+            függvényt, mely a megfelelő cellákat élőre állítja, hogy a siklógyárunk harcra kész legyen a szimuláció indításakor. 
+        </para>
+        <para>
+            Itt még található egy <function>paintEvent</function> ami a GUI kirajzolásáért és 
+            frissitésenkénti újrarajzolásáért felel. Minden híváskor végighalad az aktuálisan használt rácson és megnézi, hogy az adott sejt él-e még. 
+            Amennyiben igen, a színét feketére állítja, ellenkező esetben fehérre.
         </para>
         <programlisting language='c++'>
             <![CDATA[ 
@@ -411,7 +441,8 @@ public class MapGenerator : MonoBehaviour {
               }]]>
         </programlisting>
         <para>
-            Ezen túl van még egy destruktorunk és egy vissza függvény ami csak lépteti a játékot és frissití az update függvénnyel, ezáltal 
+            Ezen túl van még egy destruktorunk (mely megszokott módon a lefoglalt tárak felszabadításáért felel, miután a játéknak vége) 
+            és egy vissza függvény ami csak lépteti a játékot és frissití az update függvénnyel, ezáltal 
             kikényszerítve az újrarajzolást. 
         </para>
         <programlisting language='c++'>
@@ -439,8 +470,16 @@ public class MapGenerator : MonoBehaviour {
             }]]>
         </programlisting>
         <para>
-            A sejtszal.cpp tartalmazza lényegében az alapszabályokat. Itt a <function>szomszedokSzama</function> meghatározza a szomszédok 
-            számát, mely segítségével eldönthetjük, hogy az adott körben a sejt életben marad-e vagy szaporodik-e vagy esetleg elpusztul. 
+            A játéktér készen áll, már csak a játékszabályokat kell fixálni és kezdődhet is a szimuláció. 
+        </para>
+        <para>
+            A sejtszal.cpp tartalmazza lényegében az alapszabályokat. Az elején található a konstruktor, de az az értékek átadásán kívül 
+            nem sok érdekeset csinál szóval azt  itt nem taglalnám hossza. Viszont az első függvényünk itt a <function>szomszedokSzama</function> 
+            meghatározza a szomszédok számát, mely segítségével eldönthetjük, hogy az adott körben a sejt életben marad-e vagy szaporodik-e vagy esetleg elpusztul.
+            Ez a játéknak a legfontosabb része, a szíve-lelke mondhatni. Az utolsó paramétere egy <type>boolean</type> aminek megíváskor az ELO 
+            értéket adjuk ét, tehát a függvény azt számolja, hogy egy adott cellának hány darab ÉLŐ szomszédja van. Két darab forciklus végig megy 
+            a 3x3-as területen, viszont egy if-el kihagyjuk a középső elemet, azaz a sejtet magát akinek a szomszédjait vizsgáljuk. Végül végighaladunk 
+            a vizsgálni kívánt elemeken és ha élőtt találunk, akkor növeljük a <varname>allapotuSzomszed</varname>-ot, majd annak értékével visszatérünk.  
         </para>
         <programlisting language='c++'>
             <![CDATA[ 
@@ -475,7 +514,11 @@ public class MapGenerator : MonoBehaviour {
         </programlisting>
         <para>
             Az <function>IdoFejlodes</function> pedig meghatározza, hogy a szomszéd szám alapjáán ténylegesen mi lesz a sejttel. Ugye az 
-            előbbi bekezdés alapján 3 állapot álhat elő. 
+            előbbi bekezdés alapján 3 állapot állhat elő. Ehhez szükségünk lesz mindkét rácsunkra. Az egyik ugye a számítás előtti, a másik pedig az utánni, 
+            azaz a következő kör/iteráció már az új rácson folytatódhasson. Ezeken a rácsokon megint csak végig kell lépkednünk, minden cellának le 
+            kell kérnünk a szomszédjainak a számát, melyet az előbb taglalt függvénnyel teszünk meg. Majd megállapítjuk, hogy az adott sejt 
+            él-e még. Ha igen akkor pontosan 2 vagy 3 szomszéddal kell rendelkezni-e a túléléshez, ha ettől több vagy kevesebb, akkor a sejt elpusztúl. 
+            Viszont ha az adott sejt halott volt, de pontosan 3 élő szomszédja van, akkor ott új sejt születik. 
         </para>
         <programlisting language='c++'>
             <![CDATA[ 
@@ -509,7 +552,12 @@ public class MapGenerator : MonoBehaviour {
                 racsIndex = (racsIndex+1)%2;
             }
             ]]>
-        </programlisting>          
+        </programlisting>
+        <para>
+            Ez volt a conway élet játékának egy kis példája. Az eredeti játékban van lehetőségünk meghatározni, hogy melyik sejt kezdjen élve. 
+            Viszont akiket érdekel ez a téma és elég kitartóak azok kipróbálhatják a manuális életjátékát is, mivel hogy a szabályok ismeretében 
+            ez a játék táblán is játszható, csak kicsit hosszabb időt vesznek igénybe az iterációk és lehet nem lesz olyan látványos.  
+        </para>          
     </section>        
     <section>
         <title>BrainB Benchmark</title>
@@ -593,6 +641,409 @@ public class MapGenerator : MonoBehaviour {
         <para>
             Megoldás videó: <link xlink:href="https://youtu.be/WRDt8ljy_hI">https://youtu.be/WRDt8ljy_hI</link>
         </para>
+        <para>
+            Ennél a feladatnál az volt a célunk, hogy egy kapott kódot módosítsunk, továbbfejlesszük.
+        </para>
+        <programlisting language="python">
+<![CDATA[ 
+from __future__ import print_function
+# ------------------------------------------------------------------------------------------------
+# Copyright (c) 2016 Microsoft Corporation
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+# NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------------------------
+
+# Tutorial sample #2: Run simple mission using raw XML
+
+# Added modifications by Norbert Bátfai (nb4tf4i) batfai.norbert@inf.unideb.hu, mine.ly/nb4tf4i.1
+# 2018.10.18, https://bhaxor.blog.hu/2018/10/18/malmo_minecraft
+# 2020.02.02, NB4tf4i's Red Flowers, http://smartcity.inf.unideb.hu/~norbi/NB4tf4iRedFlowerHell
+# 2020.03.02, https://github.com/nbatfai/RedFlowerHell
+# 2020.03.07, "_smartSteve": nof_turn (number of turns) is replaced by the dict self.collectedFlowers 
+# 2020.03.11, "_bu": bottom up, s4v3: https://youtu.be/VP0kfvRYD1Y
+
+from builtins import range
+import MalmoPython
+import os
+import sys
+import time
+import random
+import json
+import math
+
+if sys.version_info[0] == 2:
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+else:
+    import functools
+    print = functools.partial(print, flush=True)
+
+# Create default Malmo objects:
+
+agent_host = MalmoPython.AgentHost()
+try:
+    agent_host.parse( sys.argv )
+except RuntimeError as e:
+    print('ERROR:',e)
+    print(agent_host.getUsage())
+    exit(1)
+if agent_host.receivedArgument("help"):
+    print(agent_host.getUsage())
+    exit(0)
+
+# -- set up the mission -- #
+missionXML_file='nb4tf4i_d.xml'
+with open(missionXML_file, 'r') as f:
+    print("NB4tf4i's Red Flowers (Red Flower Hell) - DEAC-Hackers Battle Royale Arena\n")
+    print("NB4tf4i vörös pipacsai (Vörös Pipacs Pokol) - DEAC-Hackers Battle Royale Arena\n")
+    print("The aim of this first challenge, called nb4tf4i's red flowers, is to collect as many red flowers as possible before the lava flows down the hillside.\n")
+    print("Ennek az első, az nb4tf4i vörös virágai nevű kihívásnak a célja összegyűjteni annyi piros virágot, amennyit csak lehet, mielőtt a láva lefolyik a hegyoldalon.\n")    
+    print("Norbert Bátfai, batfai.norbert@inf.unideb.hu, https://arato.inf.unideb.hu/batfai.norbert/\n")
+    print("Version history\n", "Code: ", sys.argv[0], ", series 4 v.3, bottom up, max 18 poppies. Norbert Bátfai, nbatfai@gmail.com\n")
+    print("Loading mission from %s" % missionXML_file)
+    mission_xml = f.read()
+    my_mission = MalmoPython.MissionSpec(mission_xml, True)
+    my_mission.drawBlock( 0, 0, 0, "lava")
+
+class Hourglass:
+    def __init__(self, charSet):
+        self.charSet = charSet
+        self.index = 0
+    def cursor(self):
+        self.index=(self.index+1)%len(self.charSet)
+        return self.charSet[self.index]
+
+hg = Hourglass('|/-\|')
+
+class Steve:
+    def __init__(self, agent_host):
+        self.agent_host = agent_host
+        
+        self.x = 0
+        self.y = 0
+        self.z = 0
+        self.yaw = 0
+        self.pitch = 0
+        
+        self.front_of_me_idx = 0
+        self.front_of_me_idxr = 0
+        self.front_of_me_idxl = 0        
+        self.right_of_me_idx = 0
+        self.left_of_me_idx = 0        
+        
+        self.nof_red_flower = 0
+        self.lookingat = ""
+        self.attackLvl = 0
+        
+        self.collectedFlowers = {}
+        for i in range(100):
+            self.collectedFlowers[i] = False
+
+        self.collectedFlowers[1] = True
+        self.collectedFlowers[2] = True
+
+    def checkInventory(self, observations):
+        for i in range(2):
+            hotbari = 'Hotbar_'+str(i)+'_item'
+            hotbars = 'Hotbar_'+str(i)+'_size'
+            slot0_contents = observations.get(hotbari, "")
+            if slot0_contents == "red_flower":
+                slot0_size = observations.get(hotbars, "")
+                if self.nof_red_flower < slot0_size :
+                    self.nof_red_flower = slot0_size                                            
+                    print("            A RED FLOWER IS MINED AND PICKED UP")
+                    print("            Steve's lvl: ", self.y, "Flower lvl: ", self.attackLvl) 
+                    self.collectedFlowers[self.attackLvl] = True
+                    self.agent_host.sendCommand( "look -1" )
+                    time.sleep(.4)
+                    if self.lvlUp(observations.get("nbr3x3", 0)):
+                        return True
+    def pickUp(self):
+        self.agent_host.sendCommand( "attack 1" )
+        time.sleep(.23)#.23
+        self.attackLvl = self.y
+
+    def lvlUp(self, nbr):
+        if self.collectedFlowers[self.y]:
+            #self.turnToWall(nbr)
+            if nbr[self.left_of_me_idx+9]=="dirt":
+                self.agent_host.sendCommand( "jumpstrafe -1" )
+                time.sleep(.10)#.2
+            elif nbr[self.right_of_me_idx+9]=="dirt":
+                self.agent_host.sendCommand( "jumpstrafe 1" )
+                time.sleep(.10)#.2
+            elif nbr[self.front_of_me_idx+9]=="dirt":
+                self.agent_host.sendCommand( "jumpmove 1" )
+                time.sleep(.10)#.2
+            else:
+                self.turnToWall(nbr)                
+                self.agent_host.sendCommand( "move 1" )
+                time.sleep(.10)#.2
+            return True
+        else:
+            return False
+
+    def idle(self, delay):
+        #print("      SLEEPING for ", delay)
+        time.sleep(delay)
+                                                        
+    def isInTrap(self, nbr):
+            
+        dc = 0    
+        nbri = [9,10,11,12,14,15,16,17]    
+        for i in range(1, len(nbri)):
+            if nbr[nbri[i]]=="dirt" :
+                dc = dc + 1            
+        return dc > 5
+    
+    def turnFromWall(self, nbr):
+        if (nbr[self.right_of_me_idx+9]=="air" and nbr[self.left_of_me_idx+9]=="dirt") or (nbr[self.right_of_me_idx]=="air" and nbr[self.left_of_me_idx]=="dirt"):
+            self.agent_host.sendCommand( "turn 1" )
+        else:
+            self.agent_host.sendCommand( "turn -1" )
+        time.sleep(.2)#.2
+
+    def turnToWall(self, nbr):
+        if (nbr[self.right_of_me_idx+9]=="air" and nbr[self.left_of_me_idx+9]=="dirt") or (nbr[self.right_of_me_idx]=="air" and nbr[self.left_of_me_idx]=="dirt"):
+            self.agent_host.sendCommand( "turn -1" )
+        else:
+            self.agent_host.sendCommand( "turn 1" )
+        time.sleep(.2)#.2
+
+    def calcNbrIndex(self):
+        if self.yaw >= 180-22.5 and self.yaw <= 180+22.5 :
+            self.front_of_me_idx = 1
+            self.front_of_me_idxr = 2
+            self.front_of_me_idxl = 0
+            self.right_of_me_idx = 5
+            self.left_of_me_idx = 3            
+        elif self.yaw >= 180+22.5 and self.yaw <= 270-22.5 :
+            self.front_of_me_idx = 2 
+            self.front_of_me_idxr = 5
+            self.front_of_me_idxl =1             
+            self.right_of_me_idx = 8
+            self.left_of_me_idx = 0            
+        elif self.yaw >= 270-22.5 and self.yaw <= 270+22.5 :
+            self.front_of_me_idx = 5
+            self.front_of_me_idxr = 8
+            self.front_of_me_idxl = 2
+            self.right_of_me_idx = 7
+            self.left_of_me_idx = 1                        
+        elif self.yaw >= 270+22.5 and self.yaw <= 360-22.5 :
+            self.front_of_me_idx = 8            
+            self.front_of_me_idxr = 7
+            self.front_of_me_idxl = 5          
+            self.right_of_me_idx = 6
+            self.left_of_me_idx = 2                        
+        elif self.yaw >= 360-22.5 or self.yaw <= 0+22.5 :
+            self.front_of_me_idx = 7
+            self.front_of_me_idxr = 6
+            self.front_of_me_idxl = 8
+            self.right_of_me_idx = 3
+            self.left_of_me_idx = 5                        
+        elif self.yaw >= 0+22.5 and self.yaw <= 90-22.5 :
+            self.front_of_me_idx = 6
+            self.front_of_me_idxr = 3
+            self.front_of_me_idxl = 7          
+            self.right_of_me_idx = 0
+            self.left_of_me_idx = 8                        
+        elif self.yaw >= 90-22.5 and self.yaw <= 90+22.5 :
+            self.front_of_me_idx = 3
+            self.front_of_me_idxr = 0
+            self.front_of_me_idxl = 6
+            self.right_of_me_idx = 1
+            self.left_of_me_idx = 7                        
+        elif self.yaw >= 90+22.5 and self.yaw <= 180-22.5 :
+            self.front_of_me_idx = 0
+            self.front_of_me_idxr = 1
+            self.front_of_me_idxl = 3
+            self.right_of_me_idx = 2
+            self.left_of_me_idx = 6                        
+        else:
+            print("There is great disturbance in the Force...")            
+
+    def whatISee(self, observations):
+        self.lookingat = "NOTHING"            
+        if "LineOfSight" in observations:
+            lineOfSight = observations["LineOfSight"] 
+            self.lookingat = lineOfSight["type"]      
+
+    def whatMyPos(self, observations):
+        if "Yaw" in observations:
+            self.yaw = int(observations["Yaw"])
+        if "Pitch" in observations:
+            self.pitch = int(observations["Pitch"])
+        if "XPos" in observations:
+            self.x = int(observations["XPos"])
+        if "ZPos" in observations:
+            self.z = int(observations["ZPos"])        
+        if "YPos" in observations:
+            self.y = int(observations["YPos"])        
+            
+    def run(self):
+        world_state = self.agent_host.getWorldState()
+        # Loop until mission ends:
+        while world_state.is_mission_running:
+            
+            #print(">>> nb4tf4i arena -----------------------------------\n")
+            act = self.action(world_state)
+            #print("nb4tf4i arena >>> -----------------------------------\n")
+            if not act:
+                self.idle(.017)
+            world_state = self.agent_host.getWorldState()
+
+    def action(self, world_state):
+        for error in world_state.errors:
+            print("Error:", error.text)
+        
+        if world_state.number_of_observations_since_last_state == 0:
+            #print("    NO OBSERVATIONS NO ACTIONS")
+            return False
+        
+        input = world_state.observations[-1].text
+        observations = json.loads(input)
+        nbr = observations.get("nbr3x3", 0)
+        #print(observations)
+        
+        self.whatMyPos(observations)
+        print("\r    Steve's Coords: ", self.x, self.y, self.z, end='')        
+        #print("    Steve's Yaw: ", self.yaw)        
+        #print("    Steve's Pitch: ", self.pitch)        
+
+        self.checkInventory(observations)
+        #print("Number of flowers: ", self.nof_red_flower)
+
+        self.whatISee(observations)
+        #print("    Steve's <): ", self.lookingat)
+                        
+        self.calcNbrIndex()                
+                        
+        if self.isInTrap(nbr) :
+            self.agent_host.sendCommand( "jumpmove 1" )
+            time.sleep(.1)
+            self.turnFromWall(nbr)
+            self.agent_host.sendCommand( "jumpmove 1" )
+            time.sleep(.1)            
+            return True
+
+        if self.lookingat == "red_flower":
+            print(" A RED FLOWER IS FOUND (lookingat)")
+            self.pickUp()
+            return True
+        
+        for i in range(9):
+            if nbr[i]=="red_flower" or nbr[i+9]=="red_flower" or nbr[i+18]=="red_flower":
+                print("        I CAN SEE A RED FLOWER: ", i, " LEVEL ", self.y)
+                if i == self.front_of_me_idx :
+                    print("F            A RED FLOWER IS RIGTH IN FRONT OF ME")
+                    self.agent_host.sendCommand( "move 1" )
+                    time.sleep(.2)
+                    self.agent_host.sendCommand( "look 1" )
+                    time.sleep(.2)
+                    print("Steve <) ", self.lookingat)
+                    return True
+                elif i == self.front_of_me_idxr :
+                    print("R            A RED FLOWER IS RIGTH IN RIGHT OF ME")
+                    self.agent_host.sendCommand( "strafe 1" )
+                    time.sleep(.2)
+                    return True
+                elif i == self.front_of_me_idxl :
+                    print("L            A RED FLOWER IS RIGTH IN LEFT OF ME")
+                    self.agent_host.sendCommand( "strafe -1" )
+                    time.sleep(.2)
+                    return True
+                elif i == 4  :
+                    self.red_flower_is_mining = True
+                    print("            I AM STANDING ON A RED FLOWER!!!")
+                    
+                    if self.pitch != 90:
+                        self.agent_host.sendCommand( "look 1" )
+                        print("PITCH            I AM STANDING ON A RED FLOWER!!!")
+                        time.sleep(.3)
+                    else:
+                        print("ATTACK            I AM STANDING ON A RED FLOWER!!! LEVEL ", self.y)
+                        self.pickUp()
+                        self.agent_host.sendCommand( "look -1" )
+                        time.sleep(.3)
+                    return True
+                
+                else :
+                    print("            I AM TURNING TO A RED FLOWER")
+                    self.agent_host.sendCommand( "turn 1" )
+                    time.sleep(.2)
+                    return True
+  
+        if self.lvlUp(nbr):
+            print("        LVL UP")
+
+        if nbr[self.front_of_me_idx+9]!="air" and nbr[self.front_of_me_idx+9]!="red_flower":
+            print("        THERE ARE OBSTACLES IN FRONT OF ME ",  nbr[self.front_of_me_idx], end='')
+  
+            self.turnFromWall(nbr)
+                        
+        else:
+            print("        THERE IS NO OBSTACLE IN FRONT OF ME", end='')
+            
+            if nbr[self.front_of_me_idx]=="dirt":
+                self.agent_host.sendCommand( "move 1" )
+                time.sleep(.01)#013
+            else:
+                self.turnFromWall(nbr)                
+                
+        return True        
+
+num_repeats = 1
+for ii in range(num_repeats):
+
+    my_mission_record = MalmoPython.MissionRecordSpec()
+
+    # Attempt to start a mission:
+    max_retries = 6
+    for retry in range(max_retries):
+        try:
+            agent_host.startMission( my_mission, my_mission_record )
+            break
+        except RuntimeError as e:
+            if retry == max_retries - 1:
+                print("Error starting mission:", e)
+                exit(1)
+            else:
+                print("Attempting to start the mission:")
+                time.sleep(2)
+
+    # Loop until mission starts:
+    print("   Waiting for the mission to start")
+    world_state = agent_host.getWorldState()
+
+    while not world_state.has_mission_begun:
+        print("\r"+hg.cursor(), end="")
+        time.sleep(0.15)
+        world_state = agent_host.getWorldState()
+        for error in world_state.errors:
+            print("Error:",error.text)
+
+    print("NB4tf4i Red Flower Hell running\n")
+    steve = Steve(agent_host)
+    steve.run()
+    print("Number of flowers: "+ str(steve.nof_red_flower))
+    time.sleep(3)
+
+print("Mission ended")
+# Mission has ended.
+]]>
+        </programlisting>
     </section>    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 </chapter>                

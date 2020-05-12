@@ -12,23 +12,144 @@
     </info>
     <section>
         <title>Programozási alapfogalmak</title>
-        <para>         
-            <citation>PICI</citation>       
+        <para>
+            <citation>PICI</citation>
         </para>
-    </section>        
-    <section>
-        <title>Programozás bevezetés</title>
-        <para>                
-            <citation>KERNIGHANRITCHIE</citation>
+        <para> 
+            A számítógépek programozására szolgáló programozási nyelveket, három típusba/szintbe soroljuk:
         </para>
         <para>
-            Megoldás videó: <link xlink:href="https://youtu.be/zmfT9miB-jY">https://youtu.be/zmfT9miB-jY</link>
-        </para>        
-    </section>        
-    <section>
-        <title>Programozás</title>
-        <para>                
-            <citation>BMECPP</citation>
+            <itemizedlist> 
+                <listitem>
+                    <para>gépi nyelv (amin a számítógép beszél)</para>
+                </listitem>
+                <listitem>
+                    <para>assembly nyelv (egyfajta átmenete a két másik szintnek)</para>
+                </listitem>
+                <listitem>
+                    <para>magas szintű nyelv (ez már valamivel közelebb áll az általunk beszélt emberi nyelvhez)</para>
+                </listitem> 
+            </itemizedlist>
+        </para>
+        <para>
+            A magas szintű programozási nyelven megírt programokat forrásprogramnak vagy forrásszövegnek (vagy akár forráskódnak) 
+            hívják. Ezt viszont nem írhatjuk meg akárhogy. Minden magas szintű programozási nyelvnek megvan a maga szintaktikája 
+            (a nyelvre vonatkozó formai és "nyelvtani" megszoritások) melyeket be kell tartania a programozónak, különben a fordítás
+            során szintaktikai hibát kapunk. Ezen túl vannak még úgynevezett szemantikai szabályok is, melyek a tartalmiés értelmezési
+            szabályok együttese.
+            Tehát egy magas szintű nyelvet a szintaktikai és a szemantikai szabályok határoznak meg, különböztetnek meg a többitől.
+        </para>
+        <para>
+            Ha megírtuk a forrásprogramot, abból még nem lesz futtathó program, hiszen a processzur nem beszéli a magas szintű nyelveket,
+            ezért a programunkat a processzor számára is értelmezhetővé kell tenni, azaz lefordítani. Itt lépnek be a fordítók, mely adott 
+            magas szintű nyelvből képes futtatható állományt (tárgyprogramot) előállítani.
+            Ehhez a következő lépéseket hajtja végre:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem>
+                    <para>lexikális elemzés (lexikális egységekre darabolja a forrásszöveget)</para>
+                </listitem>
+                <listitem>
+                    <para>szintaktikai elemzés (szintaktikai megkötéseknek teljseülésének ellenőrzése)</para>
+                </listitem>
+                <listitem>
+                    <para>szemantikai elemzés (szemantikai megkötéseknek teljseülésének ellenőrzése)</para>
+                </listitem>
+                <listitem>
+                    <para>kódgenerálás (a forrásprogramból gépi nyelvű kód készítése)</para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            Általában egy fordító program egy tetszőlege magas szintű nyelvről egy tetszőleges gépi nyelvre fordít.
+            Ezen felől léteznek olyan nyelvek (pl.: C), melyek tartalmaznak nem nyelvi elemeket is. Ilyenkor előfordítóra 
+            is szükségünk van.
+        </para>
+        <para>
+            Minden programozási nyelv rendelkezik egy úgynevezett hivatkozási nyelvvel, mely a programnyelv szabványa 
+            (itt kerülnek definiálásra a szemantikai és szintaktikai megszorítások). Ezen felül léteznek implementációk, mely 
+            a megszorításokat változtatva és/vagy kiegészítve platformspecifikussá (platformhoz kötötté, azaz pl.: egy 
+            processzor típust vagy egy operációs rendszert támogat, míg a többin nem képes a működésre) teszi a programot. 
+            Bár vannak úgynevezett crossplatform (platformok közti átjárás) megoldások, a teljes átjárást máig nem sikerült megoldani.
+        </para>
+        <para>A programnyelvek (rövid) osztályozása</para>
+        <para>
+            Imperatív nyelvek:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem><para>Algoritmikus nyelv</para></listitem>
+                <listitem><para>Utasítások sorozatából áll (a processzor sorrol sorra hajtja végre a parancsokat)</para></listitem>
+                <listitem><para>Fő programozási eszköze a változó (adatok tárolására szolgál és rajta keresztül közvetlen elérhetőek a memória
+                    egységek)</para>
+                </listitem>
+                <listitem><para>Neumann-architektúra alapú</para></listitem>
+                <listitem><para>Alcsoportjai:</para></listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem><para>Eljárásorientált</para></listitem>
+                <listitem><para>Objektumorientált (ma már inkább ez az általános)</para></listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            Dekleratív nyelvek:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem><para>Nem algoritmikus</para></listitem>
+                <listitem><para>A programozó csak a problémát veti fel, a megoldást a nyelv implementációi adják</para></listitem>
+                <listitem><para>Korlátozott a memóriaműveletek lehetősége (szinte nincs is)</para></listitem>
+                <listitem><para>Alcsoportjai:</para></listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem><para>Funkcionális nyelvek</para></listitem>
+                <listitem><para>Logikai nyelvek</para></listitem>
+            </itemizedlist>
+        </para>
+        <para>Karakterkészlet</para>
+        <para>
+            Ahogyan az írott nyelvnek, úgy a programoknak is az alapkövei a karakterek. Tekinthetjük atomi egységeinek is, 
+            hiszen nem tudjuk tovább bontani. Karakterekből épül fel minden. Viszont nem mindegy hogy milyen karaktert mikor és hol
+            használunk, ugyanis vannak karakterek melyeket nem támogat egy nyelv, vannak speciális tulajdonsággal felruházott karakterek
+            , stb. A félreértések elkerülése véget a karakterek alatt nem csak a betűket kell érteni, hanem:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem><para>betűk</para></listitem>
+                <listitem><para>számok</para></listitem>
+                <listitem><para>egyéb karakterek</para></listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            A legtöbb nyelv nem támogatja a nemzeti nyelveket, kizárólag az angol abc betűit (általánosan csak a nagybetűket támogatja
+            az összes nyelv, kisbetűk esetén már vannak eltérések és ezen felül is vannak, melyek nem különböztetik meg a kis- és 
+            nagybetűket, míg mások igen)
+        </para>
+        <para>
+            A számjegyek helyzete már jóval egyszerűbb, ugyanis a decimális számrendszer az általánosan elterjedt.
+        </para>
+        <para>
+            Az egyéb karakterek közé tartoznak az elhatároló jelek, a műveleti jelek, az írásjelek és a speciális karakterek. Ezeknek
+            általában külön szerepük van a programnyelvben.
+        </para>
+        <para>Lexikális egységek</para>
+        <para>
+            Röviden azok az elemei a forráslódnak melyet a fordító a lexikális elemzés során azonosít és tokenizál. Fajtái:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem><para>Többkarakteres szimbólum: karaktersorozat melynek az adott nyelv tulajdonít jelentést.
+                    Gyakran elhatároló vagy operátori funkciót töltenek be.</para>
+                </listitem>
+                <listitem><para>Szimbólikus nevek: lehet azonosító, kulcsszó vagy standard azonosító</para></listitem>
+                <listitem><para>Címke: utasítások megjelölésére szolgál objektumorientált környezetben, későbbi hivatkozás céljából.</para></listitem>
+                <listitem><para>Megjegyzés: megjegyzéseket írhatunk a kódunk későbbi olvasóinak (akár magunknak is) az egyszerűbb
+                    értelmezés céljából. Ezeket a sorokat a fordító figyelmen kívűl hagyja.</para>
+                </listitem>
+                <listitem><para>Literál: másnéven konstansok, tehát olyan értékek amik nem változnak</para></listitem>
+            </itemizedlist>
         </para>
     </section>        
+    
 </chapter>                
