@@ -151,5 +151,77 @@
             </itemizedlist>
         </para>
     </section>        
+    <section>
+        <title>Keringhan.Ritchie: A C programozási nyelv</title>
+        <para>
+            Ebből a könyvből nekünk az első fejezetet kellett elolvasni. A könyv maga mondhatni alapvető olvasmány mindenkinek aki C nyelvet akar tanulni. Nekem is volt már hozzá szerencsém korábban 
+            is. Maga az első fejezet eléggé az alapoktól kezd, ami persze egyáltalán nem meglepő és nem is gond, hiszen az első fejezete csupán az olvasmánynak. Nem lehet mindent a közepéről kezdeni.
+            Szerencsémre a C nyelv se volt új, viszont így tényleg csak kevés meglepetéssel szolgált.  
+        </para>
+        <para>
+            Az első szakaszban klasszikusan nyit a könyv. Próbálja rávezetni az olvasót, hogy kezdjen bele, írja meg első programját, mely ugye a klasszikus, mindenki által ismert "Hello, World!" 
+            (A könyvben "Figyelem emberek!") program, mely ugyebár bemutatja a nyelv alapvető szintaxisát egy egyszerű konzolra történő kiíratás során. Ugye ehhez meg kell hívnunk egy könyvtárat, el kell 
+            készíteni a main-t és meg kell írnunk az utasításunkat (meg persze nem hagyhatjuk le a return 0-t sem). 
+        </para>
+        <para>
+            A következő szakasz a változókat mutatta be. Ezt a szakaszt különösen fontosnak tartom, mert annak ellenére hogy alapköve lenne a programozásnak, sok magukat programozónak nevező egyén sincs 
+            velük kellően tisztában. Ebben a szakaszban szóba került a változók megfelelő deklarálása. Értem ez alatt a típus megadását. Nyílván ez sokaknak egyértelmű, de aki esetlegesen még sose programozott 
+            vagy mondjuk pythont használt, annak ez nem feltétlenűl egyszerű.  
+        </para>
+        <para>
+            Ezután a karakterekről esett szó. Itt megjegyezném, hogy nem nagyon használtam korábban C-t és engem külön meglepett, hogy nem tud a nyelv <type>sztringeket</type> kezelni. A megoldás persze 
+            pofon egyszerű, szimplán csak karaktertömbként kell kezelnünk és már meg is oldódott a probléma. A karaktereket viszont be is kell kérnünk valahogy, melyre alkalmas a <function>getchar()</function> és 
+            a <function>putchar()</function>. Itt megjegyezzük, hogy a <function>printf()</function>-el és a <function>scanf()</function>-el is elérhető, viszont azok nem csak <type>char</type>-okat tudnak kezelni, 
+            ezért érdemes őket probléma specifíkusan kezelni.  
+        </para>
+        <para>
+            Ezekután megismerkedtünk az első adatszerkezetünkkel, a tömbökkel. Ugye az előbb már szóbakerültek a <type>sztringek</type> esetén. Igazából a tömbök használata egyszerű. Egyszer kell csak megérteni, 
+            hogy az informatikában a számozás a nullától indul és pofon egyszerűvé válik a használatuk. 
+        </para>
+        <para>
+            Végül eljutunk a kedvenceimhez, a függvényekhez. Bevallom, az alapok tanulásában ez okozta számomra a legnagyobb nehézséget, de miután rájöttem, hogy miért jó kiszervezni a feladatokat függvényeknek 
+            máris sokkal könnyebb volt megjegyezni az alapvető szintaxisukat. Megjegyszem, hogy általános probléma hogy keverik a függvényeket az eljárásokkal, még én is gyakran függvényként hivatkozok rájuk. Viszont 
+            a különbség pofon egyszerű. A függvényeknek van visszatérési értékük, míg az eljárásoknak nincs. Tehát az eljárás dolga végeztével nem ad vissza semmit. 
+        </para>
+    </section>
+    <section>
+        <title>10.4. Python bevezetés</title>
+        <para>
+            Nehéz elkezdenem kicsit ezt a bevezetőt, egyszerűen csak nehéz megtalálni a megfelelő szavakat. Az elmúlt években elég nagy hangot kapott a python (2018-2019, az év programozási nyelve volt). Eredetileg arra lett kitalálva hogy egy 
+            egyszerűsített szintaxissal azok is meg tudják tanulni, akiket egy java hello world programtól a sírás kerülget (ide tartoznék én is). Mikor elkezdett érdekelni a programozás akkor kacsintgattam 
+            kicsit ezzel a nyelvvel, de úgy igazán nem fogott meg. Aztán elkezdtem c++-t tanulni, amivel kicsit más irányba indultam el. Őszintén szólva kicsit lenéztem a nyelvet a c++ után, amit mélyen 
+            röstellek, hiszen számtalan lehetőséget takar, melyek most meg is mutatkoztak. A Microsoft által gondozott Minecraft Project Malmo kereteiben volt lehetőségünk Steve-et, a játék főszereplőjét, 
+            python nyelven programoznunk, későbbiekben c++-ban is. Őszintén szólva itt jött elő az, hogy mennyivel másabb pythonban dolgozni. Végereményben arra jutottam, hogy a nyáron szeretnék jobban megismerkedni 
+            ezzel a nyelvvel, mert nagyon megtetszett. 
+        </para>
+        <para>
+            Na de ne kalandozzunk el ilyen messze. Az első számú dolog amit érintenünk kell, az a szintaxis. Amiket itt nem fogunk sűrűn látni, az például a pontosvessző és a kapcsos zárójel. 
+            Az utóbbi fő oka, hogy a python behúzás alapú, tehát azt hogy meddig tart egy függvény vagy egy ciklus, azt nem az határozza meg, hogy mikor zárjuk a kapcsost, hanem h meddig tart a szakasz, az 
+            adott behúzási szinttel. Ezt igazából hamar meg lehet szokni. A másik nagyon furcsa dolog a számomra, az a for ciklusok szintaxisa volt. Jóhiszeműen bepróbálkoztam itt is a klasszikus deklarálunk egy 
+            változót mondjuk <varname>i</varname> néven, megmondom neki hogy meddig tart és hogy iterációnként mennyit változzon az értéke. A python meg csak pislogott, hogy mégis mit akarok én tőle. Persze a 
+            szintaxisával semmi baj nincs, mert a klasszikus gondolkodásban egyszerűbb meghatározni egy ciklust, mely 10-ig megy így: <screen><![CDATA[ for i in Range(10):]]></screen>, mint sem így: 
+            <screen><![CDATA[ for(int i = 0; i < 10; i++)]]></screen>. 
+        </para>
+    </section>
+    <section>
+        <title>10.2. Szoftverfejlesztés C++ nyelven</title>
+        <para>
+            Végül pedig öreg barátom, a C++. A nyelv maga a C-hez nagyon közel áll, annak egyfajta továbbfejlesztés vagy újragondolása. Avatatlanoknak például meglepő lehet, hogy a <type>g++</type> 
+            kulcsszó, amivel a c++ programokat fordítjuk, natívan, gond nélkül fordítják a C programokat is. Viszont ez fordítva nem feltétlenűl van így, ugyanis vannak elemek melyekugyebár a C-ben még 
+            nem álltak a rendelkezésünkre, viszont C++-ban meg már természetes. Ehhez ugye nem kell messzire menni, elég a második részt elolvasnun (ami a C nyelvről szólt), mert ott említettem, hogy nekem 
+            egyértelmű volt a <type>string</type> típus használata, viszont a C-nek kevésbé. 
+        </para>
+        <para>
+            Egy másik alapvető típust viszont ott nem említettem. Méghozzá a <type>bool</type>, mely a logikai változók típusa. Tehát értéke vagy igaz vagy hamis. Ezt is egyértelműnek vettem persze, hogy nyílván 
+            a C is ugyan úgy ismeri. Hát nem. Helyettük lehet szimpla <type>integereket</type> használni. Nyílván itt az érték alapvetőleg lényegtelen lenne, csak az a fontos hogy két különböző legyen és konstansan 
+            azt használjuk, mégis javaslom mindenkinek az alapvető bináris módszert, azaz van áram vagy nincs áram, másképp 1 vagy 0. 
+        </para>
+        <para>
+            Az utolsó bekezdés vagy fejezet a windows rendszerű, IDE-s fordításról, futtatásról szólt. Bár az elmúlt 3 évben már boldog linux felhasználó vagyok, eredetileg én is windowson tanultam ezeket. 
+            Ezért nem idegen tőlem ez a téma se és meg tudom érteni, hogy ezt külön taglalnia kell egy szakkönyvnek. Hálisten azóta már teljes lelki nyugalommal élem az életemet terminálból. Ugyanis ez csupán egy sor a 
+            parancssorunkban és a program már le is fordult. Ha speciálisan akarjuk fordítani, akkor csak megadjuk a megfelelő kapcsolót. Ha meg más kimenetet akarunk, akkor arra is van kapcsoló (-o). Nyílván 
+            sokaknak ijesztő lehet elsőre ez a sok minden, hogy hogyan lehet megjegyezni, de igazából egyáltalán nem vészes. Hamar meg lehet szokni és sok fejfájástól kimélnek meg. 
+        </para>
+    </section>
     
 </chapter>                

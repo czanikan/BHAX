@@ -5,12 +5,16 @@
             <keyword/>
         </keywordset>
     </info>
+    <note>
+        <title>Futtatási videó: </title>
+        <para><link xlink:href="https://youtu.be/oPujRCjIbB0">https://youtu.be/oPujRCjIbB0</link></para>
+    </note>
     <section xml:id="bhax-textbook-feladatok-mandelbrot.Mandelbrot">
         <title>A Mandelbrot halmaz</title>
         <note>
             <title>Tutorom volt:</title>
             <para>
-                Tutor Tunde
+                Tutor Tünde
             </para>          
         </note>
         <para>
@@ -590,39 +594,80 @@ main ( int argc, char *argv[] )
         </para>
         <para>
             Ez a feladat azt hivatott szemléltetni, hogy milyen előnyei lehetnek az Nvidia által fejlesztett 
-            cuda drivernek a grafikai megjelenítésben. A technológiát nagyon sokrétűen alkalmazzák, kezdve a 3D 
+            CUDA drivernek a grafikai megjelenítésben. A technológiát nagyon sokrétűen alkalmazzák, kezdve a 3D 
             grafikától (magam is használom a rendereltetéshez, mert jóval gyorsabban számól, mint a CPU) egészen a 
             játékokig. 
         </para>
         <para>
             Legnagyobb előnye a klasszikus OpenGL-el szemben, hogy nem a processzor használja a számításhoz, hanem a 
             videókártyát (fontos megjegyezni, hogy ez csak az nvidia viseókártyákra vonatkozik, az amd-sek itt hátrányban vannak)
-            , azon belül is az úgynevezett cuda magokat. Típustól függően eltérő számú mag található a VGA-ban, de minden esetben 
+            , azon belül is az úgynevezett CUDA magokat. Típustól függően eltérő számú mag található a VGA-ban, de minden esetben 
             több százról van szó. 
         </para>
         <para>
             Az alábbi példában kiosztjuk a generálni kívánt kép (vagy hívhatjuk renderelésnek is) pixeleit egy-egy 
-            cuda magnak és meglátjuk mi lesz. 
+            CUDA magnak és meglátjuk mi lesz. 
         </para>
         <para>
             Eddig ha le akartunk renderelni egy Mandelbrot halmazt, az hosszú másodpercekig is eltarthat (nyílván ez nem olyan 
-            vészes, de egy komolyabb számítás esettén a szükséges idő is arányosan hatványozódik), míg a cuda render esetén ez a 
+            vészes, de egy komolyabb számítás esettén a szükséges idő is arányosan hatványozódik), míg a CUDA render esetén ez a 
             másodperc tört része csupán. De hogy történt ez? 
         </para>
         <para>
             Ahogy a római mondás is tartja: Divide et Impera (oszd meg és uralkodj).
             Ahelyett, hogy ezt a bonyolult feladatot pár darab processzor magra sózzuk (jelen esetben 4 magról van szó),
-            inkább kiszervezzük párszáz cuda magnak. Szerintem nem kell sokat magyaráznom, hogy mi a különbség. Közösen 
+            inkább kiszervezzük párszáz CUDA magnak. Szerintem nem kell sokat magyaráznom, hogy mi a különbség. Közösen 
             pillanatok alatt végeznek a számítással és még csak kicsit se terhelik le a rendszer. 
             De ne csak a levegőbe beszéljünk, jöjjenek a számok: 
         </para>
         <screen>
             <![CDATA[ 
-            $ make
-            35
-            0.360183 sec
+36
+0.368979 sec
             ]]>
         </screen>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Mandelbrot/CUDA/mandel.png" scale="50" />
+            </imageobject>
+            <textobject>
+                <phrase>Cuda Mandelbrot</phrase>
+            </textobject>
+        </mediaobject>
+        <para>
+            Mint ahogy azt láthatjuk nagyon szépen lefutott, töredék idő alatt. Még itt megjegyeznék annyit, hogy kipróbáltam régebbi driverrel is, azzal nem sikerült, viszont a jelenegi 410.104-es 
+            driver könnyű szerrel vette az akadályt. Egyébként a driver verzió egyszerűen lekérhető a következő paranccsal: 
+        </para>
+        <screen><![CDATA[ nvidia-smi]]></screen>
+        <para>
+            És valami ilyesmit kapunk: 
+        </para>
+        <screen>
+<![CDATA[ 
+Fri May 15 16:16:46 2020       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 410.104      Driver Version: 410.104      CUDA Version: 10.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce 920M        Off  | 00000000:04:00.0 N/A |                  N/A |
+| N/A   49C    P0    N/A /  N/A |    240MiB /  2004MiB |     N/A      Default |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    0                    Not Supported                                       |
++-----------------------------------------------------------------------------+
+]]>
+        </screen>
+        <para>
+            Látszik, hogy nem a legerősebb vas és a driverem se a legfrissebb. Viszont a driver frissítés kicsit veszélyes linuxon. Legutóbb mikor frissíteni próbáltam egy végtelen ciklusba kerül a 
+            login-screen. Csak úgy sikerült bejutnom, hogy a boot beállításokat meghaxorkodtam, hogy videókártya nélkül induljon és letörölhessem azt a frissítést. Mondanom sem kell, hogy életem legjobb 
+            két órája volt amíg rá nem találtam a megoldásra. Szóval óvatosan a Nvidia driver telepítéssel, legjobb ha van backupunk. 
+        </para>
     </section>                     
 
     <section>

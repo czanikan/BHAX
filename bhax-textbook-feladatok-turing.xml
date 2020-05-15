@@ -1273,6 +1273,12 @@ plot(x,y,type="b")]]>
     </section>
     <section>
         <title>Malmo - Csiga</title>
+        <note>
+            <title>Tutoriáltam volt:</title>
+            <para>
+                A c++ verzió megírásában Aranyi Ádám. 
+            </para>
+        </note>
         <para>
             Ez volt az első önálló feladatunk a Minecraft Malmo platformon. Ezen még nagy érződnek a kezdetleges szárnypróbálgatások. 
             Új volt mind a malmo, mind a python mindkettőnknek (Tutor Tünde), de mondhatom, hogy hamar megszerettük mindkettőt. 

@@ -5,16 +5,23 @@
             <keyword/>
         </keywordset>
     </info>
+    <note>
+        <title>Futtatási videó: </title>
+        <para><link xlink:href="https://youtu.be/4aOr8HOauLs">https://youtu.be/4aOr8HOauLs</link></para>
+    </note>
     <section>
         <title>Decimálisból unárisba átváltó Turing gép</title>
         <para>
             Állapotátmenet gráfjával megadva írd meg ezt a gépet!
         </para>
+        <note>
+            <title>Extra:</title>
+            <para>
+                A feladat második felében egy Turing gép szimulációs oldalon elkészítettem ezt a gépet magát, melyet így bárki kipróbálhat és vizuálisan is megismerheti ennek a gépnek a működését. 
+            </para>
+        </note>
         <para>
             Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:
         </para>
         <para>
             Az unáris számrendszer az egyes számrendszer. Ez azt jelenti, hogy kizárólag az '1'-es számmal dolgozik, így leegyszerűsítve
@@ -25,44 +32,345 @@
         </para>
         <mediaobject>
             <imageobject>
-                <imagedata fileref="Pics/TuringDecToUnary.png" scale="37" />
+                <imagedata fileref="Pics/TuringMachine.png" scale="100" />
             </imageobject>
             <textobject>
                 <phrase>Decimálisból unárisba váltó Turing gép állapotgráfja</phrase>
             </textobject>
         </mediaobject>
         <para>
-            Az ábrán a Turing gép ezt úgy oldja meg, hogy az adott számból nulla nem lesz. Közben minden kivonás után eltárolja a 
-            levont egyeseket. A műveletet az utolsó számjegytől kezdi. Ha ez az érték nulla, akkor kilenccel folytatja a 'kék' 
-            állapottal, majd addig folytatja a kivonást míg az megint nulla lesz. Ha nem nullával kezdődik, akkor addig léptetjük,
-            míg nulla értéket nem találunk. A kivonások számát eközben eltároljuk.
+            Mielőtt nagyon belekezdünk, először meg kell értenünk, hogy mi az a Turing gép. Alapvetőleg egy roppant egyszerű szerkezet. Egy szalagról (mely fel van osztva kisebb szakaszokra) 
+            tud információt olvasni, írni és mozogni rajta előre és hátra (vagy megállni). Azt hogy épp mit kell csinálni úgynevezett state-ek, azaz állapotok határozzák meg. Egy ilyen állapotban meg 
+            kell határoznunk lehetőleg az összes eshetőséget. Ezek az esetek az ábrán a zárójelekben találhatóak. Három dolognak kell lennie: az adat amit olvas, az adat amit ír és hogy merre mozogjon 
+            tovább. Nézzük meg egy egyszerű példával: (9,8,>) ez azt jelenti, hogy ha olvas egy 9-est, azt átírja 8-asra és utánna megy jobbra. Persze nem feltétlenűl kell átírni az adott egységet. 
+            Ezt úgy oldjuk meg, hogy hogy az olvasott karaktert ugyan arra írjuk át (pl.: (=,=,<![CDATA[<]]>) ). Ezen túl minden utasításnál meg kell határoznunk, hogy az olvasást melyik állapot hajtja végre és azt 
+            is, hogy az átírás és léptetés után melyik állapotba váltson a gépünk. Mivel a Turing állapotról állapotra halad ezért meg kell határoznunk a kiinduló állapotot és a záró állapotot is 
+            (Ezek az ábránkon a piros meg a zöld karika). A köztes állapotokat, melyek ciklikusan ismétlődnek míg át nem váltottunk mindent, azokat kékkel jelöltem. Fontos megjegyezni, hogy az ábrán 
+            szerepel a <type>$</type> (dollár) jel, mely a szalagon az üres egységet jelöli. 
         </para>
         <para>
-            Ma már kicsit egyszerűbb a helyzet amit az alábbi példa is szemléltet: 
+            Nézzük meg állapotról állapotra lépve. Elsőként az induló állapotot (piros) vizsgáljuk és onnan haladunk az 5 ciklikus állapotokon (kékek) végig egyészen a záró állapotig (zöld):  
         </para>
-            <programlisting language="c">
-                <![CDATA[ #include <stdio.h>
+        <para>
+            <itemizedlist> 
+                <listitem>
+                    <para>
+                        Az első állapotban a szalagon már szerepel a bemenetünk, de a gépünk még a legelején áll. Itt javítanunk kell az olyan bemeneti hibát, hogy ha az átváltandó szám 0-val kezdődik. 
+                        Ezt úgy teszük meg, hogy felálítunk egy feltételt mely szerint, ha nullát olvasunk, akkor azt töröljük és lépünk jobbra. Viszont ha egy nullától különböző számot találunk akkor megállunk 
+                        és váltunk a következő fázisra:
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        A kékek első állomásának a feladata az volt hogy megtalálja a bemenet utolsó számjegyét. Ehhez először meg kell keresnünk az egyenlőség jelet és ha az megvan, onnan lépünk vissza 
+                        (azaz balra) egyet és folytatjuk a következő állomáson. Amíg viszont csak számokat olvasunk addig egyszerűen léptetjük jobbra és ismételjük az állapotot. 
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        A második kék állomás A számok csökkentését végzi. Itt megint két féle eset léphet fel. Az első hogy nullát találunk, ilyenkor a nullát cseréljük kilencre és lépünk balra, 
+                        viszont állapotot nem váltunk, azaz az előtte lévő számjegyen is elvégezzük a csökkentést. A csökkentés maga (mely a második eshetőség), pedig azt jelenti, hogy az adott számot 
+                        kicseréljük a nálánál egyel kisebbre, majd léptetjük jobbra a gépet és váltunk a következő szakaszba. 
+                    </para>
+                </listitem> 
+                <listitem>
+                    <para>
+                        Ebben a részben most fel kéne írnunk egy '|' karaktert, jelezvén a csökkentést. Ehhez először meg kell tatlálnunk, hogy hol van a jobb vége az adatainknak. Teheát addig kell jobbra 
+                        lépkednünk, nem találunk üres egységet. Ha megtaláltuk azt, akkor egyszerűen átírjuk egy '|' karakterre és lépünk a következő szakaszba. 
+                    </para>
+                </listitem> 
+                <listitem>
+                    <para>
+                        Most meg kell találnunk a bal végét. Méghozzá azért, mert a csökkentéses szakaszban kialakúlhatott nullás számjegy a számsorozatunk legelején, melyet el kell tüntetnünk, mielőtt megismételnénk ezt 
+                        a kék állapotokat. Ez az állomás addig lépteti a gépet balra míg üres mezőt nem talál. Ha üres mezőre ér, azt békén hagyja, viszont onnan egyet jobbra lép és áttér a ciklikus szakasz végső állomására. 
+                    </para>
+                </listitem> 
+                <listitem>
+                    <para>
+                        Ez az állapot három eshetőséget is vizsgál. Az első, hogy egy nullás számjegyen áll-e. Ha igen azt törli és jobbra lép, mely nagyon fontos, mert a további csökkentéseknél 
+                        még sok problémát okozna. A második lehetőség, hogy egy nullától különb számjegyen áll. Ekkor egyszerűen lép jobbra és folytatja az első kék állapottól. Viszont ha már csak egy 
+                        egyenlőség jel maradt, akkor felesleges tovább számolni, hiszen az azt jelenti, hogy felírtuk az összes rovást és végeztünk. Ekkor egyszerűen letöröljük az egyenlőség jelet, pusztán 
+                        csak esztétikai okokból és tovább lépünk a végső állomásra (azaz, a zöldre).
+                    </para>
+                </listitem> 
+                <listitem>
+                    <para>
+                        Igazából a záró állapottól nem várunk sokat. Jelzi a gépnek hogy sikeresen elvégezte a feladatot. 
+                    </para>
+                </listitem> 
+            </itemizedlist>
+        </para>
+        <para>
+            Végül pedig a beígért példa a Turing gépre egy szimulációban: 
+        </para>
+        <para>
+            A hozzá tartozó programot bárki kipróbálhatja a <link xlink:href="https://turingmachinesimulator.com/">Turing Machine Simulator</link> weboldalán.
+        </para>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/TM1.png" scale="30" />
+            </imageobject>
+        </mediaobject>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/TM2.png" scale="30" />
+            </imageobject>
+        </mediaobject>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/TM3.png" scale="30" />
+            </imageobject>
+        </mediaobject>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/TM4.png" scale="30" />
+            </imageobject>
+        </mediaobject>
+        <programlisting>
+<![CDATA[ 
+// Decimal to Unary Turing Machine
+// Copyright (C) 2020
+// Andrew Czanik, czandris98@gmail.com
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+// Version history
+// v.1.0
+//
 
-                    void converter(int dec)
-                    {
-                        if (dec != 0)
-                        {
-                            converter(dec - 1);
-                            printf("1");
-                        }
-                    }
-                    
-                    int main() 
-                    {
-                        int dec;
-                    
-                        printf("Ird be a valtani kivant decimalis szamot: \n");
-                        scanf("%d", &dec);
-                    
-                        converter(dec);
-                    
-                        return 0;
-                    }
+name: Decimal to Unary Turing Machine
+init: Start
+accept: Fin
+
+//Nulladik lépés
+
+Start, 0
+Start, _, >
+
+Start, 1
+FindLast, 1, -
+
+Start, 2
+FindLast, 2, -
+
+Start, 3
+FindLast, 3, -
+
+Start, 4
+FindLast, 4, -
+
+Start, 5
+FindLast, 5, -
+
+Start, 6
+FindLast, 6, -
+
+Start, 7
+FindLast, 7, -
+
+Start, 8
+FindLast, 8, -
+
+Start, 9
+FindLast, 9, -
+
+//Keressük az egyenlőségjelet
+
+FindLast, 0
+FindLast, 0, >
+
+FindLast, 1
+FindLast, 1, >
+
+FindLast, 2
+FindLast, 2, >
+
+FindLast, 3
+FindLast, 3, >
+
+FindLast, 4
+FindLast, 4, >
+
+FindLast, 5
+FindLast, 5, >
+
+FindLast, 6
+FindLast, 6, >
+
+FindLast, 7
+FindLast, 7, >
+
+FindLast, 8
+FindLast, 8, >
+
+FindLast, 9
+FindLast, 9, >
+
+FindLast, =
+Reduce, =, <
+
+//csökkentjük a számot
+
+Reduce, 1
+Write, 0, >
+
+Reduce, 2
+Write, 1, >
+
+Reduce, 3
+Write, 2, >
+
+Reduce, 4
+Write, 3, >
+
+Reduce, 5
+Write, 4, >
+
+Reduce, 6
+Write, 5, >
+
+Reduce, 7
+Write, 6, >
+
+Reduce, 8
+Write, 7, >
+
+Reduce, 9
+Write, 8, >
+
+Reduce, 0
+Reduce, 9, <
+
+//Felírjuk a számot
+
+Write, =
+Write, =, >
+
+Write, |
+Write, |, >
+
+Write, 0
+Write, 0, >
+
+Write, 1
+Write, 1, >
+
+Write, 2
+Write, 2, >
+
+Write, 3
+Write, 3, >
+
+Write, 4
+Write, 4, >
+
+Write, 5
+Write, 5, >
+
+Write, 6
+Write, 6, >
+
+Write, 7
+Write, 7, >
+
+Write, 8
+Write, 8, >
+
+Write, 9
+Write, 9, >
+
+Write, _
+MoveBack, |, <
+
+//vissza lépkedünk
+
+MoveBack, =
+MoveBack, =, <
+
+MoveBack, |
+MoveBack, |, <
+
+MoveBack, 0
+MoveBack, 0, <
+
+MoveBack, 1
+MoveBack, 1, <
+
+MoveBack, 2
+MoveBack, 2, <
+
+MoveBack, 3
+MoveBack, 3, <
+
+MoveBack, 4
+MoveBack, 4, <
+
+MoveBack, 5
+MoveBack, 5, <
+
+MoveBack, 6
+MoveBack, 6, <
+
+MoveBack, 7
+MoveBack, 7, <
+
+MoveBack, 8
+MoveBack, 8, <
+
+MoveBack, 9
+MoveBack, 9, <
+
+MoveBack, _
+Remove, _, >
+
+//töröljük az első számjegyet ha nulla.
+//Ha nem, akkor megyünk vissza az első szakaszba
+
+Remove, 0
+Remove, _, >
+
+Remove, 1
+FindLast, 1, >
+
+Remove, 2
+FindLast, 2, >
+
+Remove, 3
+FindLast, 3, >
+
+Remove, 4
+FindLast, 4, >
+
+Remove, 5
+FindLast, 5, >
+
+Remove, 6
+FindLast, 6, >
+
+Remove, 7
+FindLast, 7, >
+
+Remove, 8
+FindLast, 8, >
+
+Remove, 9
+FindLast, 9, >
+
+//Ha nincs mit törölni, azaz csak az egyenlőség jell maradt, akkor egyszerűen csak megszakítjuk a programot
+
+Remove, =
+Fin, _, -
                     ]]>
             </programlisting>
     </section>        

@@ -5,6 +5,10 @@
             <keyword/>
         </keywordset>
     </info>
+    <note>
+        <title>Futtatási videó: </title>
+        <para><link xlink:href="https://youtu.be/yUfDOM8Kwbs">https://youtu.be/yUfDOM8Kwbs</link></para>
+    </note>
     <section>
         <title><type>double **</type> háromszögmátrix</title>
         <para>
@@ -829,6 +833,29 @@ compute(nn.or, or.data[,1:2])
 
 ]]>
         </programlisting>
+        <para>
+            Kimenet: 
+        </para>
+        <screen>
+<![CDATA[ 
+$neurons
+$neurons[[1]]
+       a1 a2
+[1,] 1  0  0
+[2,] 1  1  0
+[3,] 1  0  1
+[4,] 1  1  1
+
+
+$net.result
+            [,1]
+[1,] 0.001295867
+[2,] 0.999095698
+[3,] 0.999480713
+[4,] 0.999999999
+
+]]>
+        </screen>
         <mediaobject>
             <imageobject>
                 <imagedata fileref="Pics/Rplots.png" scale="40" />
@@ -858,74 +885,11 @@ compute(nn.orand, orand.data[,1:2])
 
 ]]>
         </programlisting>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="Pics/Rplots1.png" scale="40" />
-            </imageobject>
-        </mediaobject>
         <para>
-            Végül eljutunk a várva várt kizáró vagyhoz. Mint azt az előbb említettem, ez már egy bonyolultabb művelet. Bár itt is megmondjuk neki, hogy mire mit várunk, 
-            valamiért a szimuláció során mégis hibába ütközünk. Az eredmények 0.5-höz közelítenek, nincs meg a szórás. Valószínűleg ha felbontjuk a műveletet és 
-            összetett logikai probléma ként kezelnénk, akkor ez kiküszöbölhető lenne. 
-        </para>   
-        <programlisting language='r'>
-            <![CDATA[
-a1      <- c(0,1,0,1)
-a2      <- c(0,0,1,1)
-EXOR    <- c(0,1,1,0)
-            
-exor.data <- data.frame(a1, a2, EXOR)
-            
-nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=0, linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
-            
-plot(nn.exor)
-            
-compute(nn.exor, exor.data[,1:2])
-            
-            
-            
-a1      <- c(0,1,0,1)
-a2      <- c(0,0,1,1)
-EXOR    <- c(0,1,1,0)
-            
-exor.data <- data.frame(a1, a2, EXOR)
-            
-nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=c(6, 4, 6), linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
-            
-plot(nn.exor)
-            
-compute(nn.exor, exor.data[,1:2])
-
-]]>
-        </programlisting>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="Pics/Rplots2.png" scale="40" />
-            </imageobject>
-        </mediaobject>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="Pics/Rplots3.png" scale="40" />
-            </imageobject>
-        </mediaobject>    
-    <screen>
-        <![CDATA[ 
-$neurons
-$neurons[[1]]
-       a1 a2
-[1,] 1  0  0
-[2,] 1  1  0
-[3,] 1  0  1
-[4,] 1  1  1
-
-
-$net.result
-            [,1]
-[1,] 0.001295867
-[2,] 0.999095698
-[3,] 0.999480713
-[4,] 0.999999999
-
+            Kimenet: 
+        </para>
+        <screen>
+<![CDATA[ 
 dev.new(): using pdf(file="Rplots1.pdf")
 $neurons
 $neurons[[1]]
@@ -942,7 +906,38 @@ $net.result
 [2,] 9.999999e-01 1.220517e-03
 [3,] 1.000000e+00 1.228700e-03
 [4,] 1.000000e+00 9.984462e-01
-
+]]>
+        </screen>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/Rplots1.png" scale="40" />
+            </imageobject>
+        </mediaobject>
+        <para>
+            Végül eljutunk a várva várt kizáró vagyhoz. Mint azt az előbb említettem, ez már egy bonyolultabb művelet. Bár itt is megmondjuk neki, hogy mire mit várunk, 
+            a szimuláció során mégis hibába ütközünk. Az eredmények 0.5-höz közelítenek, nincs meg a szórás. Ha felbontjuk a műveletet és 
+            összetett logikai probléma ként kezelnénk, akkor ez kiküszöbölhető. Ebben fog segíteni nekünk az MLP.
+        </para>   
+        <programlisting language='r'>
+            <![CDATA[
+a1      <- c(0,1,0,1)
+a2      <- c(0,0,1,1)
+EXOR    <- c(0,1,1,0)
+            
+exor.data <- data.frame(a1, a2, EXOR)
+            
+nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=0, linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+            
+plot(nn.exor)
+            
+compute(nn.exor, exor.data[,1:2])
+]]>
+        </programlisting>
+        <para>
+            Kimenet: 
+        </para>
+        <screen>
+<![CDATA[ 
 dev.new(): using pdf(file="Rplots2.pdf")
 $neurons
 $neurons[[1]]
@@ -959,7 +954,39 @@ $net.result
 [2,] 0.5000016
 [3,] 0.5000003
 [4,] 0.4999958
+]]>
+        </screen>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/Rplots2.png" scale="40" />
+            </imageobject>
+        </mediaobject>
+        <para>
+            Legvégül pedig az MLP. Itt nem sokat változtattunk az előző Perceptronon, pusztán csak kiegészítettük 3 extra réteggel. De ennyi elég is lesz nekünk, hogy ezt az összetett problémát külön 
+            tudja kezelni a programunk. És láss csodát, meg is tanulta. Nagyon szépen látszik az eredményen, hogy míg az első és utolsó érték a nullához közelíta, addig a második és a harmadik az 
+            egyhez konvergál.  
+        </para>
+        <programlisting language='r'>
+            <![CDATA[
+a1      <- c(0,1,0,1)
+a2      <- c(0,0,1,1)
+EXOR    <- c(0,1,1,0)
+            
+exor.data <- data.frame(a1, a2, EXOR)
+            
+nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=c(6, 4, 6), linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+            
+plot(nn.exor)
+            
+compute(nn.exor, exor.data[,1:2])
 
+]]>
+        </programlisting>
+        <para>
+            Kimenet: 
+        </para>
+        <screen>
+<![CDATA[ 
 dev.new(): using pdf(file="Rplots3.pdf")
 $neurons
 $neurons[[1]]
@@ -1004,7 +1031,12 @@ $net.result
 [4,] 0.0006378277
 
 ]]>
-    </screen>     
+        </screen>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="Pics/Rplots3.png" scale="40" />
+            </imageobject>
+        </mediaobject>    
     </section>
     <!-- 
     <section>
